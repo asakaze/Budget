@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="pl.itmation.budget.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/manage_category"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="@string/action_manage_category"
         app:showAsAction="never" />
 </menu>

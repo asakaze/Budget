@@ -9,7 +9,7 @@
     <string name="error_field_required">Pole nie może być puste</string>
 
     <!-- Strings related to main activity -->
-    <string name="action_settings">Ustawienia</string>
+    <string name="action_manage_category">Zarządzaj źródłami</string>
     <string name="title_activity_main">Budżet</string>
 
 </resources>
