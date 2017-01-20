@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Budget</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_login">Login</string>
+    <string name="prompt_password">Hasło</string>
+    <string name="action_sign_in">Zaluguj się</string>
+    <string name="error_invalid_credentials">Nieprawidłowe dane logowania</string>
+    <string name="error_field_required">Pole nie może być puste</string>
+
+    <!-- Strings related to main activity -->
+    <string name="action_settings">Ustawienia</string>
+    <string name="title_activity_main">Budżet</string>
+
+</resources>
