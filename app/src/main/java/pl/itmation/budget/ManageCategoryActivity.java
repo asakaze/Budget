@@ -1,5 +1,6 @@
 package pl.itmation.budget;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -62,6 +63,11 @@ public class ManageCategoryActivity extends AppCompatActivity {
         BudgetCategory.Type type = extractType();
         String comment = extractComment();
         category = new BudgetCategory.BudgetCategoryBuilder(name).defaultType(type).defaultValue(value).comment(comment).build();
+
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("new_category", category);
+        setResult(RESULT_OK, resultIntent);
+        finish();
     }
 
     private String extractName()

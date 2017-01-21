@@ -1,11 +1,13 @@
 package pl.itmation.budget;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
 
-class BudgetCategory {
+class BudgetCategory implements Parcelable {
 
     public enum Type {
-        NONE, INCOME, EXPENSE
+        INCOME, EXPENSE
     }
 
     private Type defaultType;
@@ -50,6 +52,13 @@ class BudgetCategory {
         this.comment = b.comment;
     }
 
+    public BudgetCategory(Parcel parcel){
+        defaultType = Type.valueOf(parcel.readString());
+        name = parcel.readString();
+        defaultValue = parcel.readInt();
+        comment = parcel.readString();
+    }
+
     @Override
     public String toString() {
         String defaultValueStr = null;
@@ -79,4 +88,28 @@ class BudgetCategory {
         return "Źródło: " + name + "\n" + "Domyślna wartość: " + defaultValueStr + "\n" +
                 "Domyślny typ: " + defaultTypeStr + "\n" + "Komentarz: " + comment;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(this.defaultType.name());
+        parcel.writeString(name);
+        parcel.writeInt(defaultValue);
+        parcel.writeString(comment);
+    }
+
+    public static final Parcelable.Creator<BudgetCategory> CREATOR =
+            new Parcelable.Creator<BudgetCategory>() {
+        public BudgetCategory createFromParcel(Parcel parcel) {
+            return new BudgetCategory(parcel);
+        }
+        public BudgetCategory[] newArray(int size) {
+            return new BudgetCategory[size];
+        }
+    };
 }
+

@@ -166,15 +166,12 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            /*for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mLogin)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }*/
+            if (mLogin.equals("user") || mLogin.equals(("admin")))
+            {
+                return true;
+            }
 
-            return true;
+            return false;
         }
 
         @Override

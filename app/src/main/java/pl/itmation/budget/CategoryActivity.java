@@ -10,8 +10,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 public class CategoryActivity extends AppCompatActivity {
+
+    static final int CREATE_CATEGORY = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +46,20 @@ public class CategoryActivity extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.add_category:
                 Intent intent = new Intent(CategoryActivity.this, ManageCategoryActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, CREATE_CATEGORY);
                 return true;
         }
         return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CREATE_CATEGORY) {
+            if (resultCode == RESULT_OK) {
+                BudgetCategory newCategory = data.getExtras().getParcelable("new_category");
+                Toast.makeText(this, newCategory.toString(),
+                        Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
