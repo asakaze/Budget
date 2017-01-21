@@ -4,17 +4,17 @@ package pl.itmation.budget;
 
 class BudgetCategory {
 
-    public enum DefaultType {
+    public enum Type {
         NONE, INCOME, EXPENSE
     }
 
-    private DefaultType defaultType;
+    private Type defaultType;
     private String name;
     private Integer defaultValue;
     private String comment;
 
     public static class BudgetCategoryBuilder {
-        private DefaultType defaultType = DefaultType.NONE;
+        private Type defaultType = null;
         private String name = null;
         private Integer defaultValue = 0;
         private String comment = null;
@@ -23,7 +23,7 @@ class BudgetCategory {
             this.name = n;
         }
 
-        public BudgetCategoryBuilder defaultType(DefaultType t) {
+        public BudgetCategoryBuilder defaultType(Type t) {
             this.defaultType = t;
             return this;
         }
@@ -50,4 +50,33 @@ class BudgetCategory {
         this.comment = b.comment;
     }
 
+    @Override
+    public String toString() {
+        String defaultValueStr = null;
+        if(defaultValue == 0)
+        {
+            defaultValueStr = "Brak";
+        }
+        else
+        {
+            defaultValueStr = defaultValue.toString();
+        }
+
+        String defaultTypeStr = null;
+        if(defaultType == null)
+        {
+            defaultTypeStr = "Brak";
+        }
+        else if (defaultType == Type.EXPENSE)
+        {
+            defaultTypeStr = "Wydatek";
+        }
+        else
+        {
+            defaultTypeStr = "Przychód";
+        }
+
+        return "Źródło: " + name + "\n" + "Domyślna wartość: " + defaultValueStr + "\n" +
+                "Domyślny typ: " + defaultTypeStr + "\n" + "Komentarz: " + comment;
+    }
 }

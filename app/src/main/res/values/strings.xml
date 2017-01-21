@@ -12,4 +12,22 @@
     <string name="action_manage_category">Zarządzaj źródłami</string>
     <string name="title_activity_main">Budżet</string>
 
+
+    <!-- Strings related to category activity -->
+    <string name="action_add_category">Dodaj źródło</string>
+    <string name="title_activity_category">Zarządzanie źródłami</string>
+
+    <!-- Strings related to manage category category activity -->
+    <string name="title_activity_manage_category">Źródło</string>
+    <string name="label_name">Nazwa</string>
+    <string name="label_comment">Komentarz (opcjonalne)</string>
+    <string name="label_value">Domyślna wartość w PLN (opcjonalne)</string>
+    <string name="label_type">Domyślne źródło</string>
+    <string name="button_create">Utwórz</string>
+    <string-array name="type_array">
+        <item>Brak</item>
+        <item>Przychód</item>
+        <item>Wydatek</item>
+    </string-array>
+
 </resources>

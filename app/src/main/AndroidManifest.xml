@@ -21,6 +21,24 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CategoryActivity"
+            android:label="@string/title_activity_category"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pl.itmation.budget.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ManageCategoryActivity"
+            android:label="@string/title_activity_manage_category"
+            android:parentActivityName=".CategoryActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pl.itmation.budget.CategoryActivity" />
+        </activity>
     </application>
 
 </manifest>
