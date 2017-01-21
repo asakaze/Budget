@@ -15,6 +15,22 @@ class BudgetCategory implements Parcelable {
     private Integer defaultValue;
     private String comment;
 
+    public Type getDefaultType() {
+        return defaultType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Integer getDefaultValue() {
+        return defaultValue;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
     public static class BudgetCategoryBuilder {
         private Type defaultType = null;
         private String name = null;

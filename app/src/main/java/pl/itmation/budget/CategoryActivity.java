@@ -10,11 +10,25 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class CategoryActivity extends AppCompatActivity {
 
-    static final int CREATE_CATEGORY = 1;
+    private static final int CREATE_CATEGORY = 1;
+    private ArrayList<BudgetCategory> categories;
+
+    static class CategoryViewHolder{
+        TextView name;
+        TextView value;
+        TextView type;
+        TextView comment;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +46,50 @@ public class CategoryActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        categories = new ArrayList<BudgetCategory>();
+        ArrayAdapter<BudgetCategory> categoryAdapter =
+                new ArrayAdapter<BudgetCategory>(this, 0, categories) {
+                    @Override
+                    public View getView(int position,
+                                        View convertView,
+                                        ViewGroup parent) {
+                        BudgetCategory currentCategory = categories.get(position);
+
+                        if(convertView == null) {
+                            convertView = getLayoutInflater()
+                                    .inflate(R.layout.category_item, null, false);
+                            CategoryViewHolder viewHolder = new CategoryViewHolder();
+                            viewHolder.name =
+                                    (TextView)convertView.findViewById(R.id.category_item_name);
+                            viewHolder.value =
+                                    (TextView)convertView.findViewById(R.id.category_item_value);
+                            viewHolder.type =
+                                    (TextView)convertView.findViewById(R.id.category_item_type);
+                            viewHolder.comment =
+                                    (TextView)convertView.findViewById(R.id.category_item_comment);
+
+                            convertView.setTag(viewHolder);
+                        }
+
+                        TextView categoryName =
+                                ((CategoryViewHolder)convertView.getTag()).name;
+                        TextView categoryValue =
+                                ((CategoryViewHolder)convertView.getTag()).value;
+                        TextView categoryType =
+                                ((CategoryViewHolder)convertView.getTag()).type;
+                        TextView categoryComment =
+                                ((CategoryViewHolder)convertView.getTag()).comment;
+
+                        categoryName.setText(currentCategory.getName());
+                        categoryValue.setText(currentCategory.getDefaultValue().toString());
+                        categoryType.setText(currentCategory.getDefaultType().toString());
+                        categoryComment.setText(currentCategory.getComment());
+                        return convertView;
+                    }
+                };
+        ListView list = (ListView) findViewById(R.id.category_list);
+        list.setAdapter(categoryAdapter);
     }
 
     @Override
@@ -59,6 +117,7 @@ public class CategoryActivity extends AppCompatActivity {
                 BudgetCategory newCategory = data.getExtras().getParcelable("new_category");
                 Toast.makeText(this, newCategory.toString(),
                         Toast.LENGTH_LONG).show();
+                categories.add(newCategory);
             }
         }
     }
