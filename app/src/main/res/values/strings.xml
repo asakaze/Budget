@@ -24,6 +24,7 @@
     <string name="label_value">Domyślna wartość w PLN (opcjonalne)</string>
     <string name="label_type">Domyślne źródło</string>
     <string name="button_create">Utwórz</string>
+    <string name="button_modify">Modyfikuj</string>
     <string-array name="type_array">
         <item>Brak</item>
         <item>Przychód</item>

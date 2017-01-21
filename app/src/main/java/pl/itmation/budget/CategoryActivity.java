@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,7 +21,8 @@ import java.util.ArrayList;
 
 public class CategoryActivity extends AppCompatActivity {
 
-    private static final int CREATE_CATEGORY = 1;
+    public static final int CREATE_CATEGORY = 1;
+    public static final int MODIFY_CATEGORY = 1;
     private ArrayList<BudgetCategory> categories;
 
     static class CategoryViewHolder{
@@ -90,6 +92,18 @@ public class CategoryActivity extends AppCompatActivity {
                 };
         ListView list = (ListView) findViewById(R.id.category_list);
         list.setAdapter(categoryAdapter);
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView,
+                                    View view, int position, long rowId) {
+                BudgetCategory currentCategory = categories.get(position);
+                Intent intent = new Intent(CategoryActivity.this, ManageCategoryActivity.class);
+                intent.putExtra("request_code", MODIFY_CATEGORY);
+                intent.putExtra("editable_category", currentCategory);
+                startActivityForResult(intent, MODIFY_CATEGORY);
+            }
+        });
     }
 
     @Override
@@ -104,6 +118,7 @@ public class CategoryActivity extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.add_category:
                 Intent intent = new Intent(CategoryActivity.this, ManageCategoryActivity.class);
+                intent.putExtra("request_code", CREATE_CATEGORY);
                 startActivityForResult(intent, CREATE_CATEGORY);
                 return true;
         }

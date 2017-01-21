@@ -17,7 +17,12 @@ import static android.widget.AdapterView.INVALID_POSITION;
 
 public class ManageCategoryActivity extends AppCompatActivity {
 
+    private enum Mode{
+        CREATE, MODIFY
+    }
+    private Mode mode;
     private BudgetCategory category = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,19 +34,23 @@ public class ManageCategoryActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        Intent data = getIntent();
+        if(data.getIntExtra("request_code", 0) == CategoryActivity.CREATE_CATEGORY)
+        {
+            mode = Mode.CREATE;
+        }
+        else if(data.getIntExtra("request_code", 0) == CategoryActivity.MODIFY_CATEGORY)
+        {
+            mode = Mode.MODIFY;
+            BudgetCategory editableCategory = data.getExtras().getParcelable("editable_category");
+            populateFields(editableCategory);
+        }
+
         populateSpinner();
         createListeners();
     }
 
     private void createListeners() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, category.toString(), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         Button button = (Button) findViewById(R.id.manage_button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -68,6 +77,34 @@ public class ManageCategoryActivity extends AppCompatActivity {
         resultIntent.putExtra("new_category", category);
         setResult(RESULT_OK, resultIntent);
         finish();
+    }
+
+    private void populateFields(BudgetCategory current)
+    {
+        EditText name = (EditText) findViewById(R.id.name_input);
+        name.setText(current.getName());
+
+        Spinner type = (Spinner) findViewById(R.id.spinner_type);
+        int position = 0;
+        if(current.getDefaultType() == BudgetCategory.Type.INCOME)
+        {
+            position = 1;
+        }
+        else if(current.getDefaultType() == BudgetCategory.Type.EXPENSE)
+        {
+            position = 2;
+        }
+
+        type.setSelection(position);
+
+        EditText value = (EditText) findViewById(R.id.value_input);
+        value.setText(current.getDefaultValue().toString());
+        EditText comment = (EditText) findViewById(R.id.comment_input);
+        comment.setText(current.getComment());
+
+        Button button = (Button) findViewById(R.id.manage_button);
+        button.setText(getString(R.string.button_modify));
+
     }
 
     private String extractName()
