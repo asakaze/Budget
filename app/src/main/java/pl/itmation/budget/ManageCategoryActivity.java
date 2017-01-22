@@ -25,6 +25,7 @@ public class ManageCategoryActivity extends AppCompatActivity
     }
     private Mode mode;
     private BudgetCategory category = null;
+    private DatabaseHandler db = null;
 
 
     @Override
@@ -36,6 +37,7 @@ public class ManageCategoryActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        db = ((App)getApplication()).db;
         populateSpinner();
 
         Intent data = getIntent();
@@ -163,11 +165,16 @@ public class ManageCategoryActivity extends AppCompatActivity
     {
         EditText nameInput = (EditText) findViewById(R.id.name_input);
         String name = nameInput.getText().toString();
-        if (TextUtils.isEmpty(name))
+        if(TextUtils.isEmpty(name))
         {
             nameInput.setError(getString(R.string.error_field_required));
             nameInput.requestFocus();
             return null;
+        }
+        else if(db.checkIfCategoryExists(name))
+        {
+            nameInput.setError(getString(R.string.error_field_unique));
+            nameInput.requestFocus();
         }
         return nameInput.getText().toString();
     }

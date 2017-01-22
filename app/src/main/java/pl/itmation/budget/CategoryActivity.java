@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +20,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import static android.R.attr.category;
+import static android.R.attr.tag;
+
 public class CategoryActivity extends AppCompatActivity
 {
     public static final int CREATE_CATEGORY = 1;
@@ -26,9 +30,12 @@ public class CategoryActivity extends AppCompatActivity
     public static final int MODIFY_CATEGORY = 2;
     public static final int MODIFY_CATEGORY_RESP = 12;
     public static final int DELETE_CATEGORY_RESP = 13;
+
+    private static final String LOGTAG = CategoryActivity.class.getSimpleName();
     private ArrayList<BudgetCategory> categories = null;
     private int currentPosition = 0;
-    ArrayAdapter<BudgetCategory> categoryAdapter = null;
+    private ArrayAdapter<BudgetCategory> categoryAdapter = null;
+    private DatabaseHandler db = null;
 
     static class CategoryViewHolder
     {
@@ -45,19 +52,10 @@ public class CategoryActivity extends AppCompatActivity
         setContentView(R.layout.activity_category);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        categories = new ArrayList<BudgetCategory>();
+        db = ((App)getApplication()).db;
+        categories = db.getAllCategories();
         categoryAdapter = new ArrayAdapter<BudgetCategory>(this, 0, categories)
             {
                 @Override
@@ -136,8 +134,8 @@ public class CategoryActivity extends AppCompatActivity
             if(resultCode == CREATE_CATEGORY_RESP)
             {
                 BudgetCategory newCategory = data.getExtras().getParcelable("new_category");
-                Toast.makeText(this, newCategory.toString(),
-                        Toast.LENGTH_LONG).show();
+                Log.d(LOGTAG, "Added item " +  newCategory.toString());
+                db.createCategory(newCategory);
                 categories.add(newCategory);
                 categoryAdapter.notifyDataSetChanged();
             }
@@ -146,16 +144,16 @@ public class CategoryActivity extends AppCompatActivity
         {
             if(resultCode == MODIFY_CATEGORY_RESP)
             {
-                Toast.makeText(this, "Modified position " + currentPosition, Toast.LENGTH_LONG).show();
+                Log.d(LOGTAG, "Modified position " + currentPosition);
                 BudgetCategory modifiedCategory = data.getExtras().getParcelable("modified_category");
-                Toast.makeText(this, modifiedCategory.toString(),
-                        Toast.LENGTH_LONG).show();
+                db.updateCategory(modifiedCategory);
                 categories.set(currentPosition, modifiedCategory);
                 categoryAdapter.notifyDataSetChanged();
             }
             else if(resultCode == DELETE_CATEGORY_RESP)
             {
-                Toast.makeText(this, "Deleted position " + currentPosition, Toast.LENGTH_LONG).show();
+                Log.d(LOGTAG, "Deleted position " + currentPosition);
+                db.deleteCategory(categories.get(currentPosition).getName());
                 categories.remove(currentPosition);
                 categoryAdapter.notifyDataSetChanged();
             }
