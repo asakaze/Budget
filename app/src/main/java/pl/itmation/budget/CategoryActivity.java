@@ -19,13 +19,19 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class CategoryActivity extends AppCompatActivity {
-
+public class CategoryActivity extends AppCompatActivity
+{
     public static final int CREATE_CATEGORY = 1;
-    public static final int MODIFY_CATEGORY = 1;
-    private ArrayList<BudgetCategory> categories;
+    public static final int CREATE_CATEGORY_RESP = 11;
+    public static final int MODIFY_CATEGORY = 2;
+    public static final int MODIFY_CATEGORY_RESP = 12;
+    public static final int DELETE_CATEGORY_RESP = 13;
+    private ArrayList<BudgetCategory> categories = null;
+    private int currentPosition = 0;
+    ArrayAdapter<BudgetCategory> categoryAdapter = null;
 
-    static class CategoryViewHolder{
+    static class CategoryViewHolder
+    {
         TextView name;
         TextView value;
         TextView type;
@@ -33,14 +39,16 @@ public class CategoryActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -50,54 +58,46 @@ public class CategoryActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         categories = new ArrayList<BudgetCategory>();
-        ArrayAdapter<BudgetCategory> categoryAdapter =
-                new ArrayAdapter<BudgetCategory>(this, 0, categories) {
-                    @Override
-                    public View getView(int position,
-                                        View convertView,
-                                        ViewGroup parent) {
-                        BudgetCategory currentCategory = categories.get(position);
+        categoryAdapter = new ArrayAdapter<BudgetCategory>(this, 0, categories)
+            {
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent)
+                {
+                    BudgetCategory currentCategory = categories.get(position);
 
-                        if(convertView == null) {
-                            convertView = getLayoutInflater()
-                                    .inflate(R.layout.category_item, null, false);
-                            CategoryViewHolder viewHolder = new CategoryViewHolder();
-                            viewHolder.name =
-                                    (TextView)convertView.findViewById(R.id.category_item_name);
-                            viewHolder.value =
-                                    (TextView)convertView.findViewById(R.id.category_item_value);
-                            viewHolder.type =
-                                    (TextView)convertView.findViewById(R.id.category_item_type);
-                            viewHolder.comment =
-                                    (TextView)convertView.findViewById(R.id.category_item_comment);
-
-                            convertView.setTag(viewHolder);
-                        }
-
-                        TextView categoryName =
-                                ((CategoryViewHolder)convertView.getTag()).name;
-                        TextView categoryValue =
-                                ((CategoryViewHolder)convertView.getTag()).value;
-                        TextView categoryType =
-                                ((CategoryViewHolder)convertView.getTag()).type;
-                        TextView categoryComment =
-                                ((CategoryViewHolder)convertView.getTag()).comment;
-
-                        categoryName.setText(currentCategory.getName());
-                        categoryValue.setText(currentCategory.getDefaultValue().toString());
-                        categoryType.setText(currentCategory.getDefaultType().toString());
-                        categoryComment.setText(currentCategory.getComment());
-                        return convertView;
+                    if(convertView == null)
+                    {
+                        convertView = getLayoutInflater().inflate(R.layout.category_item, null, false);
+                        CategoryViewHolder viewHolder = new CategoryViewHolder();
+                        viewHolder.name = (TextView)convertView.findViewById(R.id.category_item_name);
+                        viewHolder.value = (TextView)convertView.findViewById(R.id.category_item_value);
+                        viewHolder.type = (TextView)convertView.findViewById(R.id.category_item_type);
+                        viewHolder.comment = (TextView)convertView.findViewById(R.id.category_item_comment);
+                        convertView.setTag(viewHolder);
                     }
-                };
+
+                    TextView categoryName = ((CategoryViewHolder)convertView.getTag()).name;
+                    TextView categoryValue = ((CategoryViewHolder)convertView.getTag()).value;
+                    TextView categoryType = ((CategoryViewHolder)convertView.getTag()).type;
+                    TextView categoryComment = ((CategoryViewHolder)convertView.getTag()).comment;
+
+                    categoryName.setText(currentCategory.getName());
+                    categoryValue.setText(currentCategory.getDefaultValue().toString());
+                    categoryType.setText(currentCategory.getDefaultType().toString());
+                    categoryComment.setText(currentCategory.getComment());
+                    return convertView;
+                }
+            };
         ListView list = (ListView) findViewById(R.id.category_list);
         list.setAdapter(categoryAdapter);
 
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> adapterView,
-                                    View view, int position, long rowId) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowId)
+            {
                 BudgetCategory currentCategory = categories.get(position);
+                currentPosition = position;
                 Intent intent = new Intent(CategoryActivity.this, ManageCategoryActivity.class);
                 intent.putExtra("request_code", MODIFY_CATEGORY);
                 intent.putExtra("editable_category", currentCategory);
@@ -107,15 +107,18 @@ public class CategoryActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_category, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch(item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch(item.getItemId())
+        {
             case R.id.add_category:
                 Intent intent = new Intent(CategoryActivity.this, ManageCategoryActivity.class);
                 intent.putExtra("request_code", CREATE_CATEGORY);
@@ -126,13 +129,35 @@ public class CategoryActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CREATE_CATEGORY) {
-            if (resultCode == RESULT_OK) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(requestCode == CREATE_CATEGORY)
+        {
+            if(resultCode == CREATE_CATEGORY_RESP)
+            {
                 BudgetCategory newCategory = data.getExtras().getParcelable("new_category");
                 Toast.makeText(this, newCategory.toString(),
                         Toast.LENGTH_LONG).show();
                 categories.add(newCategory);
+                categoryAdapter.notifyDataSetChanged();
+            }
+        }
+        else if(requestCode == MODIFY_CATEGORY)
+        {
+            if(resultCode == MODIFY_CATEGORY_RESP)
+            {
+                Toast.makeText(this, "Modified position " + currentPosition, Toast.LENGTH_LONG).show();
+                BudgetCategory modifiedCategory = data.getExtras().getParcelable("modified_category");
+                Toast.makeText(this, modifiedCategory.toString(),
+                        Toast.LENGTH_LONG).show();
+                categories.set(currentPosition, modifiedCategory);
+                categoryAdapter.notifyDataSetChanged();
+            }
+            else if(resultCode == DELETE_CATEGORY_RESP)
+            {
+                Toast.makeText(this, "Deleted position " + currentPosition, Toast.LENGTH_LONG).show();
+                categories.remove(currentPosition);
+                categoryAdapter.notifyDataSetChanged();
             }
         }
     }

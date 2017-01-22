@@ -12,12 +12,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import static android.widget.AdapterView.INVALID_POSITION;
 
-public class ManageCategoryActivity extends AppCompatActivity {
+public class ManageCategoryActivity extends AppCompatActivity
+{
 
-    private enum Mode{
+    private enum Mode
+    {
         CREATE, MODIFY
     }
     private Mode mode;
@@ -25,14 +28,15 @@ public class ManageCategoryActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_category);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        populateSpinner();
 
         Intent data = getIntent();
         if(data.getIntExtra("request_code", 0) == CategoryActivity.CREATE_CATEGORY)
@@ -42,26 +46,57 @@ public class ManageCategoryActivity extends AppCompatActivity {
         else if(data.getIntExtra("request_code", 0) == CategoryActivity.MODIFY_CATEGORY)
         {
             mode = Mode.MODIFY;
-            BudgetCategory editableCategory = data.getExtras().getParcelable("editable_category");
-            populateFields(editableCategory);
+            category = data.getExtras().getParcelable("editable_category");
+            populateFields();
         }
 
-        populateSpinner();
-        createListeners();
+        setupButtons();
     }
 
-    private void createListeners() {
-
-        Button button = (Button) findViewById(R.id.manage_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createCategory();
-            }
-        });
+    private void setupButtons()
+    {
+        Button manageButton = (Button) findViewById(R.id.manage_button);
+        Button deleteButton = (Button) findViewById(R.id.delete_button);
+        if(mode == Mode.CREATE) {
+            deleteButton.setVisibility(View.GONE);
+            manageButton.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v) {
+                    createCategory();
+                }
+            });
+        }
+        else if(mode == Mode.MODIFY)
+        {
+            manageButton.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    editCategory();
+                }
+            });
+            deleteButton.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    deleteCategory();
+                }
+            });
+        }
     }
 
-    private void createCategory() {
+    private void deleteCategory()
+    {
+        Intent resultIntent = new Intent();
+        setResult(CategoryActivity.DELETE_CATEGORY_RESP, resultIntent);
+        finish();
+    }
+
+    private void createCategory()
+    {
         String name = extractName();
         if (name == null)
         {
@@ -75,22 +110,39 @@ public class ManageCategoryActivity extends AppCompatActivity {
 
         Intent resultIntent = new Intent();
         resultIntent.putExtra("new_category", category);
-        setResult(RESULT_OK, resultIntent);
+        setResult(CategoryActivity.CREATE_CATEGORY_RESP, resultIntent);
         finish();
     }
 
-    private void populateFields(BudgetCategory current)
+    private void editCategory()
+    {
+        String name = extractName();
+        if (name == null)
+        {
+            return;
+        }
+        category.setName(name);
+        category.setDefaultType(extractType());
+        category.setComment(extractComment());
+        category.setDefaultValue(extractValue());
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("modified_category", category);
+        setResult(CategoryActivity.MODIFY_CATEGORY_RESP, resultIntent);
+        finish();
+    }
+
+    private void populateFields()
     {
         EditText name = (EditText) findViewById(R.id.name_input);
-        name.setText(current.getName());
+        name.setText(category.getName());
 
         Spinner type = (Spinner) findViewById(R.id.spinner_type);
         int position = 0;
-        if(current.getDefaultType() == BudgetCategory.Type.INCOME)
+        if(category.getDefaultType() == BudgetCategory.Type.INCOME)
         {
             position = 1;
         }
-        else if(current.getDefaultType() == BudgetCategory.Type.EXPENSE)
+        else if(category.getDefaultType() == BudgetCategory.Type.EXPENSE)
         {
             position = 2;
         }
@@ -98,9 +150,9 @@ public class ManageCategoryActivity extends AppCompatActivity {
         type.setSelection(position);
 
         EditText value = (EditText) findViewById(R.id.value_input);
-        value.setText(current.getDefaultValue().toString());
+        value.setText(category.getDefaultValue().toString());
         EditText comment = (EditText) findViewById(R.id.comment_input);
-        comment.setText(current.getComment());
+        comment.setText(category.getComment());
 
         Button button = (Button) findViewById(R.id.manage_button);
         button.setText(getString(R.string.button_modify));

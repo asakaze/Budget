@@ -12,8 +12,24 @@ class BudgetCategory implements Parcelable {
 
     private Type defaultType;
     private String name;
-    private Integer defaultValue;
+    private int defaultValue;
     private String comment;
+
+    public void setDefaultType(Type defaultType) {
+        this.defaultType = defaultType;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDefaultValue(int defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     public Type getDefaultType() {
         return defaultType;
@@ -34,7 +50,7 @@ class BudgetCategory implements Parcelable {
     public static class BudgetCategoryBuilder {
         private Type defaultType = null;
         private String name = null;
-        private Integer defaultValue = 0;
+        private int defaultValue = 0;
         private String comment = null;
 
         public BudgetCategoryBuilder(String n) {
@@ -46,7 +62,7 @@ class BudgetCategory implements Parcelable {
             return this;
         }
 
-        public BudgetCategoryBuilder defaultValue(Integer d) {
+        public BudgetCategoryBuilder defaultValue(int d) {
             this.defaultValue = d;
             return this;
         }
@@ -84,7 +100,7 @@ class BudgetCategory implements Parcelable {
         }
         else
         {
-            defaultValueStr = defaultValue.toString();
+            defaultValueStr = Integer.toString(defaultValue);
         }
 
         String defaultTypeStr = null;
