@@ -57,8 +57,8 @@ public class ManageCategoryActivity extends AppCompatActivity
 
     private void setupButtons()
     {
-        Button manageButton = (Button) findViewById(R.id.manage_button);
-        Button deleteButton = (Button) findViewById(R.id.delete_button);
+        Button manageButton = (Button) findViewById(R.id.category_menage_button);
+        Button deleteButton = (Button) findViewById(R.id.category_delete_button);
         if(mode == Mode.CREATE) {
             deleteButton.setVisibility(View.GONE);
             manageButton.setOnClickListener(new View.OnClickListener()
@@ -156,7 +156,7 @@ public class ManageCategoryActivity extends AppCompatActivity
         EditText comment = (EditText) findViewById(R.id.comment_input);
         comment.setText(category.getComment());
 
-        Button button = (Button) findViewById(R.id.manage_button);
+        Button button = (Button) findViewById(R.id.category_menage_button);
         button.setText(getString(R.string.button_modify));
 
     }

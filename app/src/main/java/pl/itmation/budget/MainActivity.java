@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,11 +22,18 @@ import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity
 {
+    public static final int CREATE_ENTRY = 1;
+    public static final int CREATE_ENTRY_RESP = 11;
+    public static final int MODIFY_ENTRY = 2;
+    public static final int MODIFY_ENTRY_RESP = 12;
+    public static final int DELETE_ENTRY_RESP = 13;
+
     private String currentUser = null;
     private static final String LOGTAG = MainActivity.class.getSimpleName();
     private ArrayList<BudgetEntry> entries = null;
     private ArrayAdapter<BudgetEntry> entryAdapter = null;
     private DatabaseHandler db = null;
+    private int currentPosition = 0;
 
     static class EntryViewHolder
     {
@@ -118,6 +126,19 @@ public class MainActivity extends AppCompatActivity
         };
         ListView list = (ListView) findViewById(R.id.budget_list);
         list.setAdapter(entryAdapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowId)
+            {
+                BudgetEntry currentEntry = entries.get(position);
+                currentPosition = position;
+                Intent intent = new Intent(MainActivity.this, ManageEntryActivity.class);
+                intent.putExtra("request_code", MODIFY_ENTRY);
+                intent.putExtra("editable_category", currentEntry);
+                startActivityForResult(intent, MODIFY_ENTRY);
+            }
+        });
     }
 
     @Override
@@ -141,5 +162,40 @@ public class MainActivity extends AppCompatActivity
             }
         }
         return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(requestCode == CREATE_ENTRY)
+        {
+            if(resultCode == CREATE_ENTRY_RESP)
+            {
+                BudgetEntry newEntry = data.getExtras().getParcelable("new_entry");
+                db.createEntry(newEntry);
+                entries.add(newEntry);
+                Collections.sort(entries);
+                entryAdapter.notifyDataSetChanged();
+            }
+        }
+        else if(requestCode == MODIFY_ENTRY)
+        {
+            if(resultCode == MODIFY_ENTRY_RESP)
+            {
+                Log.d(LOGTAG, "Modified position " + currentPosition);
+                BudgetEntry modifiedEntry = data.getExtras().getParcelable("modified_entry");
+                db.updateEntry(modifiedEntry);
+                entries.set(currentPosition, modifiedEntry);
+                Collections.sort(entries);
+                entryAdapter.notifyDataSetChanged();
+            }
+            else if(resultCode == DELETE_ENTRY_RESP)
+            {
+                Log.d(LOGTAG, "Deleted position " + currentPosition);
+                db.deleteEntry(entries.get(currentPosition).getId());
+                entries.remove(currentPosition);
+                entryAdapter.notifyDataSetChanged();
+            }
+        }
     }
 }

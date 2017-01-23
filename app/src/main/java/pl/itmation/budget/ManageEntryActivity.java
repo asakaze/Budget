@@ -128,7 +128,7 @@ public class ManageEntryActivity extends AppCompatActivity
         finish();
     }
 
-    private void editCategory()
+    private void editEntry()
     {
         String name = extractName();
         if (name == null)
@@ -162,7 +162,7 @@ public class ManageEntryActivity extends AppCompatActivity
         EditText comment = (EditText) findViewById(R.id.entry_comment_input);
         comment.setText(entry.getComment());
 
-        Button button = (Button) findViewById(R.id.manage_button);
+        Button button = (Button) findViewById(R.id.entry_menage_button);
         button.setText(getString(R.string.button_modify));
 
     }
@@ -212,6 +212,17 @@ public class ManageEntryActivity extends AppCompatActivity
             typeInput.requestFocus();
         }
         return retVal;
+    }
+
+    private String extractCategory()
+    {
+        Spinner categoryInput = (Spinner) findViewById(R.id.entry_spinner_category);
+        return categoryInput.getSelectedItem().toString();
+    }
+
+    private Calendar extractDate()
+    {
+        return null;
     }
 
     private String extractComment()

@@ -1,9 +1,12 @@
 package pl.itmation.budget;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Calendar;
 
-class BudgetEntry implements Comparable<BudgetEntry>
+class BudgetEntry implements Comparable<BudgetEntry>, Parcelable
 {
     private String name;
     private String category;
@@ -111,4 +114,57 @@ class BudgetEntry implements Comparable<BudgetEntry>
     {
         return second.getDate().compareTo(this.date);
     }
+
+    public BudgetEntry(Parcel parcel){
+        name = parcel.readString();
+        String conv = parcel.readString();
+        if(conv != null && conv != "")
+        {
+            type = BudgetCategory.Type.valueOf(conv);
+        }
+        else
+        {
+            type = null;
+        }
+        value = parcel.readInt();
+        comment = parcel.readString();
+        owner = parcel.readString();
+        category = parcel.readString();
+        date.setTimeInMillis(parcel.readLong());
+        id = parcel.readLong();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(name);
+        if(this.type != null)
+        {
+            parcel.writeString(this.type.name());
+        }
+        else
+        {
+            parcel.writeString(null);
+        }
+        parcel.writeInt(value);
+        parcel.writeString(comment);
+        parcel.writeString(owner);
+        parcel.writeString(category);
+        parcel.writeLong(date.getTimeInMillis());
+        parcel.writeLong(id);
+    }
+
+    public static final Parcelable.Creator<BudgetCategory> CREATOR =
+            new Parcelable.Creator<BudgetCategory>() {
+                public BudgetCategory createFromParcel(Parcel parcel) {
+                    return new BudgetCategory(parcel);
+                }
+                public BudgetCategory[] newArray(int size) {
+                    return new BudgetCategory[size];
+                }
+            };
 }
