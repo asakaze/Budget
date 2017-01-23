@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences session = getApplicationContext().getSharedPreferences(LoginActivity.SESSION, MODE_PRIVATE);
         currentUser = session.getString(LoginActivity.SESSION_LOGIN, "");
         Log.d(LOGTAG, "Logged as user: " + currentUser);
-        db = ((App)getApplication()).db;
+        db = ((App) getApplication()).db;
         entries = db.getAllEntries();
         Collections.sort(entries);
 
@@ -65,21 +65,21 @@ public class MainActivity extends AppCompatActivity
                 {
                     convertView = getLayoutInflater().inflate(R.layout.entry_item, null, false);
                     MainActivity.EntryViewHolder viewHolder = new MainActivity.EntryViewHolder();
-                    viewHolder.name = (TextView)convertView.findViewById(R.id.entry_item_name);
-                    viewHolder.value = (TextView)convertView.findViewById(R.id.entry_item_value);
-                    viewHolder.type = (TextView)convertView.findViewById(R.id.entry_item_type);
-                    viewHolder.comment = (TextView)convertView.findViewById(R.id.entry_item_comment);
-                    viewHolder.category = (TextView)convertView.findViewById(R.id.entry_item_category);
-                    viewHolder.date = (TextView)convertView.findViewById(R.id.entry_item_date);
+                    viewHolder.name = (TextView) convertView.findViewById(R.id.entry_item_name);
+                    viewHolder.value = (TextView) convertView.findViewById(R.id.entry_item_value);
+                    viewHolder.type = (TextView) convertView.findViewById(R.id.entry_item_type);
+                    viewHolder.comment = (TextView) convertView.findViewById(R.id.entry_item_comment);
+                    viewHolder.category = (TextView) convertView.findViewById(R.id.entry_item_category);
+                    viewHolder.date = (TextView) convertView.findViewById(R.id.entry_item_date);
                     convertView.setTag(viewHolder);
                 }
 
-                TextView entryName = ((MainActivity.EntryViewHolder)convertView.getTag()).name;
-                TextView entryValue = ((MainActivity.EntryViewHolder)convertView.getTag()).value;
-                TextView entryType = ((MainActivity.EntryViewHolder)convertView.getTag()).type;
-                TextView entryComment = ((MainActivity.EntryViewHolder)convertView.getTag()).comment;
-                TextView entryDate = ((MainActivity.EntryViewHolder)convertView.getTag()).date;
-                TextView entryCategory = ((MainActivity.EntryViewHolder)convertView.getTag()).category;
+                TextView entryName = ((MainActivity.EntryViewHolder) convertView.getTag()).name;
+                TextView entryValue = ((MainActivity.EntryViewHolder) convertView.getTag()).value;
+                TextView entryType = ((MainActivity.EntryViewHolder) convertView.getTag()).type;
+                TextView entryComment = ((MainActivity.EntryViewHolder) convertView.getTag()).comment;
+                TextView entryDate = ((MainActivity.EntryViewHolder) convertView.getTag()).date;
+                TextView entryCategory = ((MainActivity.EntryViewHolder) convertView.getTag()).category;
 
                 entryName.setText(currentEntry.getName());
                 entryValue.setText(getString(R.string.desc_value));
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 String comment = currentEntry.getComment();
-                entryComment.setText(getString(R.string.desc_comment) + " " );
+                entryComment.setText(getString(R.string.desc_comment) + " ");
                 if(comment == null || comment.equals(""))
                 {
                     entryComment.append("Brak");
@@ -172,8 +172,10 @@ public class MainActivity extends AppCompatActivity
             if(resultCode == App.CREATE_ITEM_RESP)
             {
                 BudgetEntry newEntry = data.getExtras().getParcelable("new_entry");
-                db.createEntry(newEntry);
+                long id = db.createEntry(newEntry);
+                newEntry.setId(id);
                 entries.add(newEntry);
+                Log.d(LOGTAG, "Added entry " + newEntry.toString());
                 Collections.sort(entries);
                 entryAdapter.notifyDataSetChanged();
             }
@@ -182,8 +184,8 @@ public class MainActivity extends AppCompatActivity
         {
             if(resultCode == App.MODIFY_ITEM_RESP)
             {
-                Log.d(LOGTAG, "Modified position " + currentPosition);
                 BudgetEntry modifiedEntry = data.getExtras().getParcelable("modified_entry");
+                Log.d(LOGTAG, "Modified entry at position " + currentPosition + "\n" + modifiedEntry.toString());
                 db.updateEntry(modifiedEntry);
                 entries.set(currentPosition, modifiedEntry);
                 Collections.sort(entries);
@@ -191,7 +193,8 @@ public class MainActivity extends AppCompatActivity
             }
             else if(resultCode == App.DELETE_ITEM_RESP)
             {
-                Log.d(LOGTAG, "Deleted position " + currentPosition);
+                Log.d(LOGTAG,
+                      "Deleted entry at position " + currentPosition + "\n" + entries.get(currentPosition).toString());
                 db.deleteEntry(entries.get(currentPosition).getId());
                 entries.remove(currentPosition);
                 entryAdapter.notifyDataSetChanged();

@@ -12,7 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,8 +43,7 @@ public class ManageEntryActivity extends AppCompatActivity
     private ArrayAdapter<String> categorySpinnerAdapter = null;
     private ArrayAdapter<CharSequence> typeSpinnerAdapter = null;
     private InputFields inputFields = null;
-    SimpleDateFormat dateFormatter = null;
-
+    SharedPreferences session = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -53,20 +54,16 @@ public class ManageEntryActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
 
+        session = getApplicationContext().getSharedPreferences(LoginActivity.SESSION, MODE_PRIVATE);
         db = ((App) getApplication()).db;
-        dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
         Intent data = getIntent();
-        int requestCode = data.getIntExtra("request_code", 69);
-        loadedItem = data.getExtras().getParcelable("editable_item");
-        Log.w(LOGTAG, "Name = " + loadedItem.getName());
-        Log.w(LOGTAG, "Unknown mode, request code = " + String.valueOf(requestCode));
         setMode(data);
         loadFieldsFromResources();
         populateSpinners();
         if(mode == Mode.MODIFY)
         {
             loadedItem = data.getExtras().getParcelable("editable_item");
-            populateFields();
+            populateFields(loadedItem);
         }
 
         setupButtons();
@@ -131,16 +128,16 @@ public class ManageEntryActivity extends AppCompatActivity
         inputFields.category.setAdapter(categorySpinnerAdapter);
     }
 
-    private void populateFields()
+    private void populateFields(BudgetEntry item)
     {
-        inputFields.name.setText(loadedItem.getName());
-        int positionType = typeSpinnerAdapter.getPosition(loadedItem.getType().name());
+        inputFields.name.setText(item.getName());
+        int positionType = item.getType().ordinal() + 1;
         inputFields.type.setSelection(positionType);
-        int positionCategory = typeSpinnerAdapter.getPosition(loadedItem.getCategory());
+        int positionCategory = categorySpinnerAdapter.getPosition(item.getCategory());
         inputFields.category.setSelection(positionCategory);
-        inputFields.value.setText(String.valueOf(loadedItem.getValue()));
-        inputFields.comment.setText(loadedItem.getComment());
-        inputFields.date.setText(dateFormatter.format(loadedItem.getDate().getTime()));
+        inputFields.value.setText(String.valueOf(item.getValue()));
+        inputFields.comment.setText(item.getComment());
+        inputFields.date.setText(BudgetEntry.dateFormatter.format(item.getDate().getTime()));
     }
 
     private void setupButtons()
@@ -156,7 +153,7 @@ public class ManageEntryActivity extends AppCompatActivity
                 @Override
                 public void onClick(View v)
                 {
-                    createEntry();
+                    addNewEntry();
                 }
             });
         }
@@ -189,105 +186,160 @@ public class ManageEntryActivity extends AppCompatActivity
         finish();
     }
 
-    private void createEntry()
+    private void addNewEntry()
     {
-        String name = extractName();
-        if(name == null)
+        BudgetEntry entry = createEntryFromInputs();
+        if(entry != null)
         {
-            return;
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("new_entry", entry);
+            setResult(App.CREATE_ITEM_RESP, resultIntent);
+            finish();
         }
-
-        BudgetCategory.Type type = extractType();
-        if(type == null)
-        {
-            return;
-        }
-
-        int value = extractValue();
-        if(value == 0)
-        {
-            return;
-        }
-
-        SharedPreferences session = getApplicationContext().getSharedPreferences(LoginActivity.SESSION, MODE_PRIVATE);
-        String owner = session.getString(LoginActivity.SESSION_LOGIN, "");
-
-        Calendar date = extractDate();
-        String category = extractCategory();
-        String comment = extractComment();
-        BudgetEntry entry = new BudgetEntry(name, category, type, value, date, owner, comment);
-
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("new_entry", entry);
-        setResult(App.CREATE_ITEM_RESP, resultIntent);
-        finish();
     }
 
     private void editEntry()
     {
-        String name = extractName();
-        if(name == null)
+        BudgetEntry entry = createEntryFromInputs();
+        if(entry != null)
         {
-            return;
+            entry.setId(loadedItem.getId());
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("modified_entry", entry);
+            setResult(App.MODIFY_ITEM_RESP, resultIntent);
+            finish();
         }
-        loadedItem.setName(name);
-        loadedItem.setType(extractType());
-        loadedItem.setComment(extractComment());
-        loadedItem.setValue(extractValue());
-        loadedItem.setOwner(loadedItem.getOwner());
-        loadedItem.setDate(extractDate());
-        loadedItem.setCategory(extractCategory());
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("modified_entry", loadedItem);
-        setResult(App.MODIFY_ITEM_RESP, resultIntent);
-        finish();
     }
 
-    private String extractName()
+    private BudgetEntry createEntryFromInputs()
     {
-        EditText nameInput = (EditText) findViewById(R.id.content_manage_entry_name_input);
-        String name = nameInput.getText().toString();
-        if(TextUtils.isEmpty(name))
+        String name = inputFields.name.getText().toString();
+        if(!validateName(name))
         {
-            nameInput.setError(getString(R.string.error_field_required));
-            nameInput.requestFocus();
             return null;
         }
 
-        return nameInput.getText().toString();
+        BudgetCategory.Type type = extractType();
+        if(!validateType(type))
+        {
+            return null;
+        }
+
+        String valueStr = inputFields.value.getText().toString();
+        int value = 0;
+        if(!validateValue(valueStr))
+        {
+            return null;
+        }
+        else
+        {
+            value = Integer.parseInt(valueStr);
+        }
+
+        String owner = session.getString(LoginActivity.SESSION_LOGIN, "");
+
+        String dateStr = inputFields.date.getText().toString();
+        Calendar date = null;
+        if(!validateDate(dateStr))
+        {
+            return null;
+        }
+        else
+        {
+            date = Calendar.getInstance();
+            try
+            {
+                date.setTime(BudgetEntry.dateFormatter.parse(dateStr));
+            }
+            catch(ParseException e)
+            {
+                return null;
+            }
+        }
+        String category = extractCategory();
+        String comment = inputFields.comment.getText().toString();
+
+        BudgetEntry entry = new BudgetEntry(name, category, type, value, date, owner, comment);
+        return entry;
     }
 
-    private int extractValue()
+    private boolean validateName(String name)
     {
-        EditText valueInput = (EditText) findViewById(R.id.content_manage_entry_value_input);
-        if(valueInput.getText().toString().equals(""))
+        if(TextUtils.isEmpty(name))
         {
-            valueInput.setError(getString(R.string.error_field_required));
-            valueInput.requestFocus();
-            return 0;
+            inputFields.name.setError(getString(R.string.error_field_required));
+            inputFields.name.requestFocus();
+            inputFields.name.selectAll();
+            return false;
         }
-        return Integer.parseInt(valueInput.getText().toString());
+        else
+        {
+            return true;
+        }
+    }
+
+    private boolean validateType(BudgetCategory.Type type)
+    {
+        if(type == null)
+        {
+            Toast.makeText(this, getString(R.string.type_required), Toast.LENGTH_LONG).show();
+            inputFields.type.requestFocus();
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    private boolean validateValue(String valueStr)
+    {
+        if(TextUtils.isEmpty(valueStr))
+        {
+            inputFields.value.setError(getString(R.string.error_field_required));
+            inputFields.value.requestFocus();
+            inputFields.value.selectAll();
+            return false;
+        }
+
+        int value = 0;
+        try
+        {
+            value = Integer.valueOf(valueStr);
+        }
+        catch(NumberFormatException e)
+        {
+            inputFields.value.setError(getString(R.string.error_cannot_parse));
+            inputFields.value.requestFocus();
+            inputFields.value.selectAll();
+            return false;
+        }
+
+        if(value <= 0)
+        {
+            inputFields.value.setError(getString(R.string.error_wrong_value));
+            inputFields.value.requestFocus();
+            inputFields.value.selectAll();
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     private BudgetCategory.Type extractType()
     {
-        BudgetCategory.Type retVal = null;
-        Spinner typeInput = (Spinner) findViewById(R.id.content_manage_entry_spinner_type);
-        switch(typeInput.getSelectedItemPosition())
+        int position = inputFields.type.getSelectedItemPosition();
+        if(position == 0)
         {
-            case 1:
-                retVal = BudgetCategory.Type.INCOME;
-                break;
-            case 2:
-                retVal = BudgetCategory.Type.EXPENSE;
-                break;
+            return null;
         }
-
-        if(retVal == null)
+        else
         {
-            typeInput.requestFocus();
+            BudgetCategory.Type type = BudgetCategory.Type.values()[position - 1];
+            return type;
         }
-        return retVal;
     }
 
     private String extractCategory()
@@ -296,18 +348,20 @@ public class ManageEntryActivity extends AppCompatActivity
         return categoryInput.getSelectedItem().toString();
     }
 
-    private Calendar extractDate()
+    private boolean validateDate(String dateStr)
     {
-        return null;
-    }
-
-    private String extractComment()
-    {
-        EditText commentInput = (EditText) findViewById(R.id.content_manage_entry_comment_input);
-        if(commentInput.getText() == null)
+        Calendar date = Calendar.getInstance();
+        try
         {
-            return null;
+            date.setTime(BudgetEntry.dateFormatter.parse(dateStr));
         }
-        return commentInput.getText().toString();
+        catch(ParseException e)
+        {
+            String msg = getString(R.string.error_wrong_date) + " " + BudgetEntry.dateFormat;
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            inputFields.date.requestFocus();
+            return false;
+        }
+        return true;
     }
 }

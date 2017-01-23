@@ -28,7 +28,7 @@ public class App extends Application
     @Override
     public void onTerminate()
     {
-        this.db.close();
+        this.db.closeDB();
         super.onTerminate();
     }
 
@@ -250,5 +250,4 @@ public class App extends Application
 
         db.createEntry(entry);
     }
-
 }

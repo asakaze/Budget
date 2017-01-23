@@ -1,12 +1,13 @@
 package pl.itmation.budget;
 
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
-class BudgetCategory implements Parcelable, Comparable<BudgetCategory> {
+class BudgetCategory implements Parcelable, Comparable<BudgetCategory>
+{
 
-    public enum Type {
+    public enum Type
+    {
         INCOME, EXPENSE
     }
 
@@ -15,53 +16,66 @@ class BudgetCategory implements Parcelable, Comparable<BudgetCategory> {
     private int defaultValue;
     private String comment;
 
-    public void setDefaultType(Type defaultType) {
+    public void setDefaultType(Type defaultType)
+    {
         this.defaultType = defaultType;
     }
 
-    public void setName(String name) {
+    public void setName(String name)
+    {
         this.name = name;
     }
 
-    public void setDefaultValue(int defaultValue) {
+    public void setDefaultValue(int defaultValue)
+    {
         this.defaultValue = defaultValue;
     }
 
-    public void setComment(String comment) {
+    public void setComment(String comment)
+    {
         this.comment = comment;
     }
 
-    public Type getDefaultType() {
+    public Type getDefaultType()
+    {
         return defaultType;
     }
 
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
-    public int getDefaultValue() {
+    public int getDefaultValue()
+    {
         return defaultValue;
     }
 
-    public String getComment() {
+    public String getComment()
+    {
         return comment;
     }
 
-    public static class BudgetCategoryBuilder {
+    public static class BudgetCategoryBuilder
+    {
         private Type defaultType = null;
         private String name = null;
         private int defaultValue = 0;
         private String comment = null;
 
-        public BudgetCategoryBuilder(String n) {
+        public BudgetCategoryBuilder(String n)
+        {
             this.name = n;
         }
 
-        public BudgetCategoryBuilder defaultType(Type t) {
+        public BudgetCategoryBuilder defaultType(Type t)
+        {
             this.defaultType = t;
             return this;
         }
-        public BudgetCategoryBuilder defaultType(String s) {
+
+        public BudgetCategoryBuilder defaultType(String s)
+        {
             if(s.equals(Type.EXPENSE.name()))
             {
                 this.defaultType = Type.EXPENSE;
@@ -77,29 +91,34 @@ class BudgetCategory implements Parcelable, Comparable<BudgetCategory> {
             return this;
         }
 
-        public BudgetCategoryBuilder defaultValue(int d) {
+        public BudgetCategoryBuilder defaultValue(int d)
+        {
             this.defaultValue = d;
             return this;
         }
 
-        public BudgetCategoryBuilder comment(String c) {
+        public BudgetCategoryBuilder comment(String c)
+        {
             this.comment = c;
             return this;
         }
 
-        public BudgetCategory build() {
+        public BudgetCategory build()
+        {
             return new BudgetCategory(this);
         }
     }
 
-    private BudgetCategory(BudgetCategoryBuilder b) {
+    private BudgetCategory(BudgetCategoryBuilder b)
+    {
         this.defaultType = b.defaultType;
         this.name = b.name;
         this.defaultValue = b.defaultValue;
         this.comment = b.comment;
     }
 
-    public BudgetCategory(Parcel parcel){
+    public BudgetCategory(Parcel parcel)
+    {
         name = parcel.readString();
         String conv = parcel.readString();
         if(conv != null && conv != "")
@@ -115,7 +134,8 @@ class BudgetCategory implements Parcelable, Comparable<BudgetCategory> {
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         String defaultValueStr = null;
         if(defaultValue == 0)
         {
@@ -131,7 +151,7 @@ class BudgetCategory implements Parcelable, Comparable<BudgetCategory> {
         {
             defaultTypeStr = "Brak";
         }
-        else if (defaultType == Type.EXPENSE)
+        else if(defaultType == Type.EXPENSE)
         {
             defaultTypeStr = "Wydatek";
         }
@@ -141,16 +161,18 @@ class BudgetCategory implements Parcelable, Comparable<BudgetCategory> {
         }
 
         return "Źródło: " + name + "\n" + "Domyślna wartość: " + defaultValueStr + "\n" +
-                "Domyślny typ: " + defaultTypeStr + "\n" + "Komentarz: " + comment;
+               "Domyślny typ: " + defaultTypeStr + "\n" + "Komentarz: " + comment;
     }
 
     @Override
-    public int describeContents() {
+    public int describeContents()
+    {
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int flags) {
+    public void writeToParcel(Parcel parcel, int flags)
+    {
         parcel.writeString(name);
         if(this.defaultType != null)
         {
@@ -165,14 +187,18 @@ class BudgetCategory implements Parcelable, Comparable<BudgetCategory> {
     }
 
     public static final Parcelable.Creator<BudgetCategory> CREATOR =
-            new Parcelable.Creator<BudgetCategory>() {
-        public BudgetCategory createFromParcel(Parcel parcel) {
-            return new BudgetCategory(parcel);
-        }
-        public BudgetCategory[] newArray(int size) {
-            return new BudgetCategory[size];
-        }
-    };
+            new Parcelable.Creator<BudgetCategory>()
+            {
+                public BudgetCategory createFromParcel(Parcel parcel)
+                {
+                    return new BudgetCategory(parcel);
+                }
+
+                public BudgetCategory[] newArray(int size)
+                {
+                    return new BudgetCategory[size];
+                }
+            };
 
     @Override
     public int compareTo(BudgetCategory second)

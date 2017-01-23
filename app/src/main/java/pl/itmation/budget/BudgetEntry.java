@@ -1,13 +1,15 @@
 package pl.itmation.budget;
 
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 class BudgetEntry implements Comparable<BudgetEntry>, Parcelable
 {
+    public static final String dateFormat = "dd-MM-yyyy";
+    public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
     private String name;
     private String category;
     private BudgetCategory.Type type;
@@ -17,73 +19,89 @@ class BudgetEntry implements Comparable<BudgetEntry>, Parcelable
     private String owner;
     private long id;
 
-    public long getId() {
+    public long getId()
+    {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(long id)
+    {
         this.id = id;
     }
 
-    public String getOwner() {
+    public String getOwner()
+    {
         return owner;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(String owner)
+    {
         this.owner = owner;
     }
 
-    public String getComment() {
+    public String getComment()
+    {
         return comment;
     }
 
-    public void setComment(String comment) {
+    public void setComment(String comment)
+    {
         this.comment = comment;
     }
 
-    public Calendar getDate() {
+    public Calendar getDate()
+    {
         return date;
     }
 
-    public void setDate(Calendar date) {
+    public void setDate(Calendar date)
+    {
         this.date = date;
     }
 
-    public int getValue() {
+    public int getValue()
+    {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(int value)
+    {
         this.value = value;
     }
 
-    public BudgetCategory.Type getType() {
+    public BudgetCategory.Type getType()
+    {
         return type;
     }
 
-    public void setType(BudgetCategory.Type type) {
+    public void setType(BudgetCategory.Type type)
+    {
         this.type = type;
     }
 
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name)
+    {
         this.name = name;
     }
 
-    public String getCategory() {
+    public String getCategory()
+    {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(String category)
+    {
         this.category = category;
     }
 
-
     public BudgetEntry(long id, String name, String category, BudgetCategory.Type type,
-                       int value, Calendar date, String owner, String comment) {
+                       int value, Calendar date, String owner, String comment)
+    {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -95,17 +113,20 @@ class BudgetEntry implements Comparable<BudgetEntry>, Parcelable
     }
 
     public BudgetEntry(long id, String name, String category, BudgetCategory.Type type,
-                       int value, Calendar date, String owner) {
+                       int value, Calendar date, String owner)
+    {
         this(id, name, category, type, value, date, owner, null);
     }
 
     public BudgetEntry(String name, String category, BudgetCategory.Type type,
-                       int value, Calendar date, String owner) {
+                       int value, Calendar date, String owner)
+    {
         this(0, name, category, type, value, date, owner, null);
     }
 
     public BudgetEntry(String name, String category, BudgetCategory.Type type,
-                       int value, Calendar date, String owner, String comment) {
+                       int value, Calendar date, String owner, String comment)
+    {
         this(0, name, category, type, value, date, owner, comment);
     }
 
@@ -115,7 +136,8 @@ class BudgetEntry implements Comparable<BudgetEntry>, Parcelable
         return second.getDate().compareTo(this.date);
     }
 
-    public BudgetEntry(Parcel parcel){
+    public BudgetEntry(Parcel parcel)
+    {
         name = parcel.readString();
         String conv = parcel.readString();
         if(conv != null && conv != "")
@@ -136,12 +158,14 @@ class BudgetEntry implements Comparable<BudgetEntry>, Parcelable
     }
 
     @Override
-    public int describeContents() {
+    public int describeContents()
+    {
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int flags) {
+    public void writeToParcel(Parcel parcel, int flags)
+    {
         parcel.writeString(name);
         if(this.type != null)
         {
@@ -160,12 +184,30 @@ class BudgetEntry implements Comparable<BudgetEntry>, Parcelable
     }
 
     public static final Parcelable.Creator<BudgetEntry> CREATOR =
-            new Parcelable.Creator<BudgetEntry>() {
-                public BudgetEntry createFromParcel(Parcel parcel) {
+            new Parcelable.Creator<BudgetEntry>()
+            {
+                public BudgetEntry createFromParcel(Parcel parcel)
+                {
                     return new BudgetEntry(parcel);
                 }
-                public BudgetEntry[] newArray(int size) {
+
+                public BudgetEntry[] newArray(int size)
+                {
                     return new BudgetEntry[size];
                 }
             };
+
+    @Override
+    public String toString()
+    {
+        String typeStr = (type == BudgetCategory.Type.EXPENSE) ? "Wydatek" : "Przychód";
+        String ret = "Nazwa: " + name + "\n" +
+                     "Typ: " + typeStr + "\n" +
+                     "Wartość: " + String.valueOf(value) + "\n" +
+                     "Źródło: " + category + "\n" +
+                     "Data: " + BudgetEntry.dateFormatter.format(date.getTime()) + "\n" +
+                     "Komentarz: " + comment + "\n" +
+                     "ID: " + String.valueOf(id);
+        return ret;
+    }
 }

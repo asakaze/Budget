@@ -1,6 +1,5 @@
 package pl.itmation.budget;
 
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -11,7 +10,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class DatabaseHandler extends SQLiteOpenHelper {
+public class DatabaseHandler extends SQLiteOpenHelper
+{
 
     private static final String LOGTAG = DatabaseHandler.class.getSimpleName();
 
@@ -42,30 +42,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db)
     {
         String CREATE_TABLE_CATEGORY = "CREATE TABLE IF NOT EXISTS " + TABLE_CATEGORY
-                + "("
-                + KEY_NAME + " TEXT PRIMARY KEY,"
-                + KEY_TYPE + " TEXT,"
-                + KEY_VALUE + " INTEGER,"
-                + KEY_COMMENT + " TEXT"
-                + ")";
+                                       + "("
+                                       + KEY_NAME + " TEXT PRIMARY KEY,"
+                                       + KEY_TYPE + " TEXT,"
+                                       + KEY_VALUE + " INTEGER,"
+                                       + KEY_COMMENT + " TEXT"
+                                       + ")";
 
         String CREATE_TABLE_ENTRY = "CREATE TABLE IF NOT EXISTS " + TABLE_ENTRY
-                + "("
-                + KEY_ID + " INTEGER PRIMARY KEY,"
-                + KEY_NAME + " TEXT,"
-                + KEY_TYPE + " TEXT,"
-                + KEY_VALUE + " INTEGER,"
-                + KEY_COMMENT + " TEXT,"
-                + KEY_OWNER + " TEXT,"
-                + KEY_DATE + " INTEGER,"
-                + KEY_CATEGORY + " TEXT"
-                + ")";
+                                    + "("
+                                    + KEY_ID + " INTEGER PRIMARY KEY,"
+                                    + KEY_NAME + " TEXT,"
+                                    + KEY_TYPE + " TEXT,"
+                                    + KEY_VALUE + " INTEGER,"
+                                    + KEY_COMMENT + " TEXT,"
+                                    + KEY_OWNER + " TEXT,"
+                                    + KEY_DATE + " INTEGER,"
+                                    + KEY_CATEGORY + " TEXT"
+                                    + ")";
 
         String CREATE_TABLE_USER = "CREATE TABLE IF NOT EXISTS " + TABLE_USER
-                + "("
-                + KEY_LOGIN + " TEXT PRIMARY KEY,"
-                + KEY_PASSWORD + " TEXT"
-                + ")";
+                                   + "("
+                                   + KEY_LOGIN + " TEXT PRIMARY KEY,"
+                                   + KEY_PASSWORD + " TEXT"
+                                   + ")";
 
         db.execSQL(CREATE_TABLE_CATEGORY);
         Log.d(LOGTAG, "Query: " + CREATE_TABLE_CATEGORY);
@@ -87,7 +87,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public long createCategory(BudgetCategory category)
     {
         SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = fillCategoryValues(category);
 
+        long id = db.insert(TABLE_CATEGORY, null, values);
+        Log.d(LOGTAG, "Inserted into db: " + values.toString());
+        return id;
+    }
+
+    private ContentValues fillCategoryValues(BudgetCategory category)
+    {
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, category.getName());
         values.put(KEY_VALUE, category.getDefaultValue());
@@ -101,10 +109,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(KEY_TYPE, "");
         }
         values.put(KEY_COMMENT, category.getComment());
-
-        long id = db.insert(TABLE_CATEGORY, null, values);
-        Log.d(LOGTAG, "Inserted into db: " + values.toString());
-        return id;
+        return values;
     }
 
     public long createUser(User user)
@@ -123,7 +128,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public long createEntry(BudgetEntry entry)
     {
         SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = fillEntryValues(entry);
 
+        long id = db.insert(TABLE_ENTRY, null, values);
+        Log.d(LOGTAG, "Inserted into db: " + values.toString());
+        return id;
+    }
+
+    private ContentValues fillEntryValues(BudgetEntry entry)
+    {
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, entry.getName());
         values.put(KEY_VALUE, entry.getValue());
@@ -132,10 +145,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_OWNER, entry.getOwner());
         values.put(KEY_DATE, entry.getDate().getTimeInMillis());
         values.put(KEY_CATEGORY, entry.getCategory());
-
-        long id = db.insert(TABLE_ENTRY, null, values);
-        Log.d(LOGTAG, "Inserted into db: " + values.toString());
-        return id;
+        return values;
     }
 
     public User getUser(String login)
@@ -146,7 +156,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         {
             cur = db.rawQuery("SELECT * FROM " + TABLE_USER + " WHERE " + KEY_LOGIN + " = ? ", new String[]{login});
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             Log.d(LOGTAG, "DB error: " + e.toString());
             return null;
@@ -184,8 +194,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             return null;
         }
 
-
-        if (cur.moveToFirst())
+        if(cur.moveToFirst())
         {
             do
             {
@@ -201,7 +210,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 BudgetEntry entry = new BudgetEntry(id, name, category, type, value, date, owner, comment);
                 entries.add(entry);
             }
-            while (cur.moveToNext());
+            while(cur.moveToNext());
         }
 
         cur.close();
@@ -226,71 +235,49 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             return null;
         }
 
-        if (cur.moveToFirst())
+        if(cur.moveToFirst())
         {
             do
             {
-                BudgetCategory category = new BudgetCategory.BudgetCategoryBuilder(cur.getString(cur.getColumnIndex(KEY_NAME))).
-                        defaultType(cur.getString(cur.getColumnIndex(KEY_TYPE))).
-                        defaultValue(cur.getInt(cur.getColumnIndex(KEY_VALUE))).
-                        comment(cur.getString(cur.getColumnIndex(KEY_COMMENT))).
-                        build();
+                String name = cur.getString(cur.getColumnIndex(KEY_NAME));
+                String type = cur.getString(cur.getColumnIndex(KEY_TYPE));
+                int value = cur.getInt(cur.getColumnIndex(KEY_VALUE));
+                String comment = cur.getString(cur.getColumnIndex(KEY_COMMENT));
+                BudgetCategory category = new BudgetCategory.BudgetCategoryBuilder(name).defaultType(type)
+                                                                                        .defaultValue(value)
+                                                                                        .comment(comment)
+                                                                                        .build();
                 categories.add(category);
             }
-            while (cur.moveToNext());
+            while(cur.moveToNext());
         }
 
         cur.close();
         return categories;
     }
 
-
     public int updateCategory(BudgetCategory category)
     {
         SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = fillCategoryValues(category);
 
-        ContentValues values = new ContentValues();
-        values.put(KEY_NAME, category.getName());
-        values.put(KEY_VALUE, category.getDefaultValue());
-        BudgetCategory.Type type = category.getDefaultType();
-        if(type != null)
-        {
-            values.put(KEY_TYPE, category.getDefaultType().name());
-        }
-        else
-        {
-            values.put(KEY_TYPE, "");
-        }
-        values.put(KEY_COMMENT, category.getComment());
-
-        return db.update(TABLE_CATEGORY, values, KEY_NAME + " = ?",
-                new String[] { category.getName() });
+        return db.update(TABLE_CATEGORY, values, KEY_NAME + " = ?", new String[]{category.getName()});
     }
 
     public int updateEntry(BudgetEntry entry)
     {
         SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = fillEntryValues(entry);
 
-        ContentValues values = new ContentValues();
-        values.put(KEY_NAME, entry.getName());
-        values.put(KEY_VALUE, entry.getValue());
-        values.put(KEY_TYPE, entry.getType().name());
-        values.put(KEY_COMMENT, entry.getComment());
-        values.put(KEY_OWNER, entry.getOwner());
-        values.put(KEY_DATE, entry.getDate().getTimeInMillis());
-        values.put(KEY_CATEGORY, entry.getCategory());
-
-        return db.update(TABLE_ENTRY, values, KEY_NAME + " = ?",
-                new String[] { String.valueOf(entry.getId()) });
+        return db.update(TABLE_ENTRY, values, KEY_NAME + " = ?", new String[]{String.valueOf(entry.getId())});
     }
-
 
     public void deleteCategory(String name)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         try
         {
-            db.delete(TABLE_CATEGORY, KEY_NAME + " = ?", new String[] { name });
+            db.delete(TABLE_CATEGORY, KEY_NAME + " = ?", new String[]{name});
         }
         catch(Exception e)
         {
@@ -303,7 +290,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         try
         {
-            db.delete(TABLE_ENTRY, KEY_ID + " = ?", new String[] { String.valueOf(id) });
+            db.delete(TABLE_ENTRY, KEY_ID + " = ?", new String[]{String.valueOf(id)});
         }
         catch(Exception e)
         {
@@ -319,7 +306,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         {
             cur = db.rawQuery("SELECT * FROM " + TABLE_CATEGORY + " WHERE " + KEY_NAME + " = ? ", new String[]{name});
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             Log.d(LOGTAG, "DB error: " + e.toString());
             return false;

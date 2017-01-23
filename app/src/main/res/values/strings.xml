@@ -50,5 +50,8 @@
     <string name="entry_label_date">Data</string>
     <string name="entry_label_category">Źródło</string>
     <string name="add_entry">Dodaj pozycję</string>
-
+    <string name="type_required">Musisz wybrać typ: przychód/wydatek</string>
+    <string name="error_cannot_parse">Wartość nie jest liczbą lub zbyt duża (zakres do 2147483647)</string>
+    <string name="error_wrong_value">Wartość musi być większa od 0</string>
+    <string name="error_wrong_date">Wymagany format daty:</string>
 </resources>
