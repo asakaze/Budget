@@ -9,6 +9,11 @@ import java.util.GregorianCalendar;
 public class App extends Application
 {
     public DatabaseHandler db = null;
+    public static final int CREATE_ITEM_REQ = 10;
+    public static final int CREATE_ITEM_RESP = 11;
+    public static final int MODIFY_ITEM_REQ = 20;
+    public static final int MODIFY_ITEM_RESP = 21;
+    public static final int DELETE_ITEM_RESP = 22;
 
     private static final String LOGTAG = App.class.getSimpleName();
     @Override

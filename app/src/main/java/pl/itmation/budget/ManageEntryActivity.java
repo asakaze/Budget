@@ -4,14 +4,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -21,55 +23,146 @@ public class ManageEntryActivity extends AppCompatActivity
     {
         CREATE, MODIFY
     }
-    private Mode mode;
-    private BudgetEntry entry = null;
+
+    static class InputFields
+    {
+        EditText name;
+        EditText value;
+        Spinner type;
+        EditText comment;
+        Spinner category;
+        EditText date;
+    }
+
+    private static final String LOGTAG = ManageEntryActivity.class.getSimpleName();
+    private Mode mode = null;
+    private BudgetEntry loadedItem = null;
     private DatabaseHandler db = null;
-    private ArrayAdapter<String> categoryAdapter = null;
+    private ArrayAdapter<String> categorySpinnerAdapter = null;
+    private ArrayAdapter<CharSequence> typeSpinnerAdapter = null;
+    private InputFields inputFields = null;
+    SimpleDateFormat dateFormatter = null;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_category);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setContentView(R.layout.activity_manage_entry);
+        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
 
-        db = ((App)getApplication()).db;
-        populateSpinners();
-
+        db = ((App) getApplication()).db;
+        dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
         Intent data = getIntent();
-        if(data.getIntExtra("request_code", 0) == MainActivity.CREATE_ENTRY)
+        int requestCode = data.getIntExtra("request_code", 69);
+        loadedItem = data.getExtras().getParcelable("editable_item");
+        Log.w(LOGTAG, "Name = " + loadedItem.getName());
+        Log.w(LOGTAG, "Unknown mode, request code = " + String.valueOf(requestCode));
+        setMode(data);
+        loadFieldsFromResources();
+        populateSpinners();
+        if(mode == Mode.MODIFY)
         {
-            mode = Mode.CREATE;
-        }
-        else if(data.getIntExtra("request_code", 0) == MainActivity.MODIFY_ENTRY)
-        {
-            mode = Mode.MODIFY;
-            entry = data.getExtras().getParcelable("editable_entry");
+            loadedItem = data.getExtras().getParcelable("editable_item");
             populateFields();
         }
 
         setupButtons();
     }
 
+    private void setMode(Intent data)
+    {
+        int requestCode = data.getIntExtra("request_code", 0);
+        if(requestCode == App.CREATE_ITEM_REQ)
+        {
+            mode = Mode.CREATE;
+            Log.d(LOGTAG, "Create mode");
+        }
+        else if(requestCode == App.MODIFY_ITEM_REQ)
+        {
+            mode = Mode.MODIFY;
+            Log.w(LOGTAG, "Modify mode");
+        }
+        else
+        {
+            Log.w(LOGTAG, "Unknown mode, request code = " + String.valueOf(requestCode));
+        }
+    }
+
+    private void loadFieldsFromResources()
+    {
+        inputFields = new InputFields();
+        inputFields.name = (EditText) findViewById(R.id.content_manage_entry_name_input);
+        inputFields.type = (Spinner) findViewById(R.id.content_manage_entry_spinner_type);
+        inputFields.category = (Spinner) findViewById(R.id.content_manage_entry_spinner_category);
+        inputFields.value = (EditText) findViewById(R.id.content_manage_entry_value_input);
+        inputFields.comment = (EditText) findViewById(R.id.content_manage_entry_comment_input);
+        inputFields.date = (EditText) findViewById(R.id.content_manage_entry_date_input);
+    }
+
+    private void populateSpinners()
+    {
+        populateTypeSpinner();
+        populateCategorySpinner();
+    }
+
+    private void populateTypeSpinner()
+    {
+        typeSpinnerAdapter =
+                ArrayAdapter.createFromResource(this, R.array.type_array, android.R.layout.simple_spinner_item);
+        typeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        inputFields.type.setAdapter(typeSpinnerAdapter);
+    }
+
+    private void populateCategorySpinner()
+    {
+        ArrayList<String> category_names = new ArrayList<>();
+        ArrayList<BudgetCategory> categories = db.getAllCategories();
+
+        for(BudgetCategory cat : categories)
+        {
+            category_names.add(cat.getName());
+        }
+
+        categorySpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, category_names);
+        categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        inputFields.category.setAdapter(categorySpinnerAdapter);
+    }
+
+    private void populateFields()
+    {
+        inputFields.name.setText(loadedItem.getName());
+        int positionType = typeSpinnerAdapter.getPosition(loadedItem.getType().name());
+        inputFields.type.setSelection(positionType);
+        int positionCategory = typeSpinnerAdapter.getPosition(loadedItem.getCategory());
+        inputFields.category.setSelection(positionCategory);
+        inputFields.value.setText(String.valueOf(loadedItem.getValue()));
+        inputFields.comment.setText(loadedItem.getComment());
+        inputFields.date.setText(dateFormatter.format(loadedItem.getDate().getTime()));
+    }
+
     private void setupButtons()
     {
-        Button menageButton = (Button) findViewById(R.id.category_menage_button);
-        Button deleteButton = (Button) findViewById(R.id.category_delete_button);
-        if(mode == Mode.CREATE) {
+        Button menageButton = (Button) findViewById(R.id.content_manage_entry_menage_button);
+        Button deleteButton = (Button) findViewById(R.id.content_manage_entry_delete_button);
+
+        if(mode == Mode.CREATE)
+        {
             deleteButton.setVisibility(View.GONE);
             menageButton.setOnClickListener(new View.OnClickListener()
             {
                 @Override
-                public void onClick(View v) {
+                public void onClick(View v)
+                {
                     createEntry();
                 }
             });
         }
         else if(mode == Mode.MODIFY)
         {
+            menageButton.setText(getString(R.string.button_modify));
             menageButton.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -92,7 +185,7 @@ public class ManageEntryActivity extends AppCompatActivity
     private void deleteEntry()
     {
         Intent resultIntent = new Intent();
-        setResult(MainActivity.DELETE_ENTRY_RESP, resultIntent);
+        setResult(App.DELETE_ITEM_RESP, resultIntent);
         finish();
     }
 
@@ -104,16 +197,18 @@ public class ManageEntryActivity extends AppCompatActivity
             return;
         }
 
-        int value = extractValue();
-        if(value == 0)
-        {
-            return;
-        }
         BudgetCategory.Type type = extractType();
         if(type == null)
         {
             return;
         }
+
+        int value = extractValue();
+        if(value == 0)
+        {
+            return;
+        }
+
         SharedPreferences session = getApplicationContext().getSharedPreferences(LoginActivity.SESSION, MODE_PRIVATE);
         String owner = session.getString(LoginActivity.SESSION_LOGIN, "");
 
@@ -124,52 +219,33 @@ public class ManageEntryActivity extends AppCompatActivity
 
         Intent resultIntent = new Intent();
         resultIntent.putExtra("new_entry", entry);
-        setResult(MainActivity.CREATE_ENTRY_RESP, resultIntent);
+        setResult(App.CREATE_ITEM_RESP, resultIntent);
         finish();
     }
 
     private void editEntry()
     {
         String name = extractName();
-        if (name == null)
+        if(name == null)
         {
             return;
         }
-        entry.setName(name);
-        entry.setType(extractType());
-        entry.setComment(extractComment());
-        entry.setValue(extractValue());
-        entry.setOwner(entry.getOwner());
-        entry.setDate(extractDate());
-        entry.setCategory(extractCategory());
+        loadedItem.setName(name);
+        loadedItem.setType(extractType());
+        loadedItem.setComment(extractComment());
+        loadedItem.setValue(extractValue());
+        loadedItem.setOwner(loadedItem.getOwner());
+        loadedItem.setDate(extractDate());
+        loadedItem.setCategory(extractCategory());
         Intent resultIntent = new Intent();
-        resultIntent.putExtra("modified_entry", entry);
-        setResult(MainActivity.MODIFY_ENTRY_RESP, resultIntent);
+        resultIntent.putExtra("modified_entry", loadedItem);
+        setResult(App.MODIFY_ITEM_RESP, resultIntent);
         finish();
-    }
-
-    private void populateFields()
-    {
-        EditText name = (EditText) findViewById(R.id.entry_name_input);
-        name.setText(entry.getName());
-
-        Spinner type = (Spinner) findViewById(R.id.entry_spinner_type);
-        int position = categoryAdapter.getPosition(entry.getCategory());
-        type.setSelection(position);
-
-        EditText value = (EditText) findViewById(R.id.entry_value_input);
-        value.setText(String.valueOf(entry.getValue()));
-        EditText comment = (EditText) findViewById(R.id.entry_comment_input);
-        comment.setText(entry.getComment());
-
-        Button button = (Button) findViewById(R.id.entry_menage_button);
-        button.setText(getString(R.string.button_modify));
-
     }
 
     private String extractName()
     {
-        EditText nameInput = (EditText) findViewById(R.id.entry_name_input);
+        EditText nameInput = (EditText) findViewById(R.id.content_manage_entry_name_input);
         String name = nameInput.getText().toString();
         if(TextUtils.isEmpty(name))
         {
@@ -183,8 +259,8 @@ public class ManageEntryActivity extends AppCompatActivity
 
     private int extractValue()
     {
-        EditText valueInput = (EditText) findViewById(R.id.entry_value_input);
-        if (valueInput.getText().toString().equals(""))
+        EditText valueInput = (EditText) findViewById(R.id.content_manage_entry_value_input);
+        if(valueInput.getText().toString().equals(""))
         {
             valueInput.setError(getString(R.string.error_field_required));
             valueInput.requestFocus();
@@ -196,8 +272,8 @@ public class ManageEntryActivity extends AppCompatActivity
     private BudgetCategory.Type extractType()
     {
         BudgetCategory.Type retVal = null;
-        Spinner typeInput = (Spinner) findViewById(R.id.entry_spinner_type);
-        switch (typeInput.getSelectedItemPosition())
+        Spinner typeInput = (Spinner) findViewById(R.id.content_manage_entry_spinner_type);
+        switch(typeInput.getSelectedItemPosition())
         {
             case 1:
                 retVal = BudgetCategory.Type.INCOME;
@@ -216,7 +292,7 @@ public class ManageEntryActivity extends AppCompatActivity
 
     private String extractCategory()
     {
-        Spinner categoryInput = (Spinner) findViewById(R.id.entry_spinner_category);
+        Spinner categoryInput = (Spinner) findViewById(R.id.content_manage_entry_spinner_category);
         return categoryInput.getSelectedItem().toString();
     }
 
@@ -227,38 +303,11 @@ public class ManageEntryActivity extends AppCompatActivity
 
     private String extractComment()
     {
-        EditText commentInput = (EditText) findViewById(R.id.entry_comment_input);
-        if (commentInput.getText() == null) return null;
+        EditText commentInput = (EditText) findViewById(R.id.content_manage_entry_comment_input);
+        if(commentInput.getText() == null)
+        {
+            return null;
+        }
         return commentInput.getText().toString();
     }
-
-    private void populateSpinners()
-    {
-        populateTypeSpinner();
-        populateCategorySpinner();
-    }
-    private void populateTypeSpinner()
-    {
-        Spinner spinner = (Spinner) findViewById(R.id.entry_spinner_type);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.type_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-    }
-
-    private void populateCategorySpinner()
-    {
-        ArrayList<String> category_names = new ArrayList<String>();
-        ArrayList<BudgetCategory> categories = db.getAllCategories();
-        for (BudgetCategory cat : categories)
-        {
-            category_names.add(cat.getName());
-        }
-        Spinner spinner = (Spinner) findViewById(R.id.entry_spinner_category);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, category_names);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-    }
-
 }

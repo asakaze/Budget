@@ -13,7 +13,6 @@
     tools:context="pl.itmation.budget.ManageEntryActivity"
     tools:showIn="@layout/activity_manage_entry">
 
-
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,7 +27,7 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="10dp">
             <TextView
-                android:id="@+id/entry_name_label"
+                android:id="@+id/content_manage_entry_name_label"
                 android:text="@string/label_name"
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -36,7 +35,7 @@
                 android:layout_height="wrap_content" />
 
             <EditText
-                android:id="@+id/entry_name_input"
+                android:id="@+id/content_manage_entry_name_input"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -49,7 +48,7 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="10dp">
             <TextView
-                android:id="@+id/entry_type_label"
+                android:id="@+id/content_manage_entry_type_label"
                 android:text="@string/entry_label_type"
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -59,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:id="@+id/entry_spinner_type" />
+                android:id="@+id/content_manage_entry_spinner_type" />
         </TableRow>
 
         <TableRow
@@ -67,7 +66,7 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="10dp">
             <TextView
-                android:id="@+id/entry_value_label"
+                android:id="@+id/content_manage_entry_value_label"
                 android:text="@string/entry_label_value"
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -75,7 +74,7 @@
                 android:gravity="center_vertical"/>
 
             <EditText
-                android:id="@+id/entry_value_input"
+                android:id="@+id/content_manage_entry_value_input"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -88,7 +87,7 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="10dp">
             <TextView
-                android:id="@+id/entry_comment_label"
+                android:id="@+id/content_manage_entry_comment_label"
                 android:text="@string/entry_label_comment"
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -96,7 +95,7 @@
                 android:layout_height="wrap_content" />
 
             <EditText
-                android:id="@+id/entry_comment_input"
+                android:id="@+id/content_manage_entry_comment_input"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -109,7 +108,7 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="10dp">
             <TextView
-                android:id="@+id/entry_date_label"
+                android:id="@+id/content_manage_entry_date_label"
                 android:text="@string/entry_label_date"
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -117,7 +116,7 @@
                 android:layout_height="wrap_content" />
 
             <EditText
-                android:id="@+id/entry_date_input"
+                android:id="@+id/content_manage_entry_date_input"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -130,7 +129,7 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="10dp">
             <TextView
-                android:id="@+id/entry_category_label"
+                android:id="@+id/content_manage_entry_category_label"
                 android:text="@string/entry_label_category"
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -140,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:id="@+id/entry_spinner_category" />
+                android:id="@+id/content_manage_entry_spinner_category" />
         </TableRow>
 
         <TableRow
@@ -152,7 +151,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:layout_weight="1"
-                android:id="@+id/entry_menage_button" />
+                android:id="@+id/content_manage_entry_menage_button" />
         </TableRow>
 
         <TableRow
@@ -165,13 +164,7 @@
                 android:gravity="center"
                 android:layout_weight="1"
                 android:textColor="@color/red"
-                android:id="@+id/entry_delete_button" />
+                android:id="@+id/content_manage_entry_delete_button" />
         </TableRow>
-
-
     </TableLayout>
-
-
-
-
 </RelativeLayout>

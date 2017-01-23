@@ -2,8 +2,6 @@ package pl.itmation.budget;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -12,9 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
-
-import static android.widget.AdapterView.INVALID_POSITION;
 
 public class ManageCategoryActivity extends AppCompatActivity
 {
@@ -41,11 +36,11 @@ public class ManageCategoryActivity extends AppCompatActivity
         populateSpinner();
 
         Intent data = getIntent();
-        if(data.getIntExtra("request_code", 0) == CategoryActivity.CREATE_CATEGORY)
+        if(data.getIntExtra("request_code", 0) == App.CREATE_ITEM_REQ)
         {
             mode = Mode.CREATE;
         }
-        else if(data.getIntExtra("request_code", 0) == CategoryActivity.MODIFY_CATEGORY)
+        else if(data.getIntExtra("request_code", 0) == App.MODIFY_ITEM_REQ)
         {
             mode = Mode.MODIFY;
             category = data.getExtras().getParcelable("editable_category");
@@ -93,7 +88,7 @@ public class ManageCategoryActivity extends AppCompatActivity
     private void deleteCategory()
     {
         Intent resultIntent = new Intent();
-        setResult(CategoryActivity.DELETE_CATEGORY_RESP, resultIntent);
+        setResult(App.DELETE_ITEM_RESP, resultIntent);
         finish();
     }
 
@@ -112,7 +107,7 @@ public class ManageCategoryActivity extends AppCompatActivity
 
         Intent resultIntent = new Intent();
         resultIntent.putExtra("new_category", category);
-        setResult(CategoryActivity.CREATE_CATEGORY_RESP, resultIntent);
+        setResult(App.CREATE_ITEM_RESP, resultIntent);
         finish();
     }
 
@@ -129,7 +124,7 @@ public class ManageCategoryActivity extends AppCompatActivity
         category.setDefaultValue(extractValue());
         Intent resultIntent = new Intent();
         resultIntent.putExtra("modified_category", category);
-        setResult(CategoryActivity.MODIFY_CATEGORY_RESP, resultIntent);
+        setResult(App.MODIFY_ITEM_RESP, resultIntent);
         finish();
     }
 

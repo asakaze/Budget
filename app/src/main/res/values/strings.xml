@@ -49,5 +49,6 @@
     <string name="entry_label_type">Typ</string>
     <string name="entry_label_date">Data</string>
     <string name="entry_label_category">Źródło</string>
+    <string name="add_entry">Dodaj pozycję</string>
 
 </resources>

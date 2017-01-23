@@ -22,12 +22,6 @@ import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity
 {
-    public static final int CREATE_ENTRY = 1;
-    public static final int CREATE_ENTRY_RESP = 11;
-    public static final int MODIFY_ENTRY = 2;
-    public static final int MODIFY_ENTRY_RESP = 12;
-    public static final int DELETE_ENTRY_RESP = 13;
-
     private String currentUser = null;
     private static final String LOGTAG = MainActivity.class.getSimpleName();
     private ArrayList<BudgetEntry> entries = null;
@@ -134,9 +128,10 @@ public class MainActivity extends AppCompatActivity
                 BudgetEntry currentEntry = entries.get(position);
                 currentPosition = position;
                 Intent intent = new Intent(MainActivity.this, ManageEntryActivity.class);
-                intent.putExtra("request_code", MODIFY_ENTRY);
-                intent.putExtra("editable_category", currentEntry);
-                startActivityForResult(intent, MODIFY_ENTRY);
+                intent.putExtra("request_code", App.MODIFY_ITEM_REQ);
+                intent.putExtra("editable_item", currentEntry);
+                Log.d(LOGTAG, "Sending intent to modify item on postition " + String.valueOf(position));
+                startActivityForResult(intent, App.MODIFY_ITEM_REQ);
             }
         });
     }
@@ -160,6 +155,11 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
                 return true;
             }
+            case R.id.add_entry:
+                Intent intent = new Intent(MainActivity.this, ManageEntryActivity.class);
+                intent.putExtra("request_code", App.CREATE_ITEM_REQ);
+                startActivityForResult(intent, App.CREATE_ITEM_REQ);
+                return true;
         }
         return false;
     }
@@ -167,9 +167,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if(requestCode == CREATE_ENTRY)
+        if(requestCode == App.CREATE_ITEM_REQ)
         {
-            if(resultCode == CREATE_ENTRY_RESP)
+            if(resultCode == App.CREATE_ITEM_RESP)
             {
                 BudgetEntry newEntry = data.getExtras().getParcelable("new_entry");
                 db.createEntry(newEntry);
@@ -178,9 +178,9 @@ public class MainActivity extends AppCompatActivity
                 entryAdapter.notifyDataSetChanged();
             }
         }
-        else if(requestCode == MODIFY_ENTRY)
+        else if(requestCode == App.MODIFY_ITEM_REQ)
         {
-            if(resultCode == MODIFY_ENTRY_RESP)
+            if(resultCode == App.MODIFY_ITEM_RESP)
             {
                 Log.d(LOGTAG, "Modified position " + currentPosition);
                 BudgetEntry modifiedEntry = data.getExtras().getParcelable("modified_entry");
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity
                 Collections.sort(entries);
                 entryAdapter.notifyDataSetChanged();
             }
-            else if(resultCode == DELETE_ENTRY_RESP)
+            else if(resultCode == App.DELETE_ITEM_RESP)
             {
                 Log.d(LOGTAG, "Deleted position " + currentPosition);
                 db.deleteEntry(entries.get(currentPosition).getId());

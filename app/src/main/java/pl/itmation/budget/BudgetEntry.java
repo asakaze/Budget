@@ -130,6 +130,7 @@ class BudgetEntry implements Comparable<BudgetEntry>, Parcelable
         comment = parcel.readString();
         owner = parcel.readString();
         category = parcel.readString();
+        date = Calendar.getInstance();
         date.setTimeInMillis(parcel.readLong());
         id = parcel.readLong();
     }
@@ -158,13 +159,13 @@ class BudgetEntry implements Comparable<BudgetEntry>, Parcelable
         parcel.writeLong(id);
     }
 
-    public static final Parcelable.Creator<BudgetCategory> CREATOR =
-            new Parcelable.Creator<BudgetCategory>() {
-                public BudgetCategory createFromParcel(Parcel parcel) {
-                    return new BudgetCategory(parcel);
+    public static final Parcelable.Creator<BudgetEntry> CREATOR =
+            new Parcelable.Creator<BudgetEntry>() {
+                public BudgetEntry createFromParcel(Parcel parcel) {
+                    return new BudgetEntry(parcel);
                 }
-                public BudgetCategory[] newArray(int size) {
-                    return new BudgetCategory[size];
+                public BudgetEntry[] newArray(int size) {
+                    return new BudgetEntry[size];
                 }
             };
 }

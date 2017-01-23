@@ -21,12 +21,6 @@ import java.util.Collections;
 
 public class CategoryActivity extends AppCompatActivity
 {
-    public static final int CREATE_CATEGORY = 1;
-    public static final int CREATE_CATEGORY_RESP = 11;
-    public static final int MODIFY_CATEGORY = 2;
-    public static final int MODIFY_CATEGORY_RESP = 12;
-    public static final int DELETE_CATEGORY_RESP = 13;
-
     private static final String LOGTAG = CategoryActivity.class.getSimpleName();
     private ArrayList<BudgetCategory> categories = null;
     private int currentPosition = 0;
@@ -131,9 +125,10 @@ public class CategoryActivity extends AppCompatActivity
                 BudgetCategory currentCategory = categories.get(position);
                 currentPosition = position;
                 Intent intent = new Intent(CategoryActivity.this, ManageCategoryActivity.class);
-                intent.putExtra("request_code", MODIFY_CATEGORY);
+                intent.putExtra("request_code", App.MODIFY_ITEM_REQ);
                 intent.putExtra("editable_category", currentCategory);
-                startActivityForResult(intent, MODIFY_CATEGORY);
+                Log.d(LOGTAG, "Sending intent to modify item on postition " + String.valueOf(position));
+                startActivityForResult(intent, App.MODIFY_ITEM_REQ);
             }
         });
     }
@@ -153,8 +148,8 @@ public class CategoryActivity extends AppCompatActivity
         {
             case R.id.add_category:
                 Intent intent = new Intent(CategoryActivity.this, ManageCategoryActivity.class);
-                intent.putExtra("request_code", CREATE_CATEGORY);
-                startActivityForResult(intent, CREATE_CATEGORY);
+                intent.putExtra("request_code", App.CREATE_ITEM_REQ);
+                startActivityForResult(intent, App.CREATE_ITEM_REQ);
                 return true;
         }
         return false;
@@ -163,9 +158,9 @@ public class CategoryActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if(requestCode == CREATE_CATEGORY)
+        if(requestCode == App.CREATE_ITEM_REQ)
         {
-            if(resultCode == CREATE_CATEGORY_RESP)
+            if(resultCode == App.CREATE_ITEM_RESP)
             {
                 BudgetCategory newCategory = data.getExtras().getParcelable("new_category");
                 Log.d(LOGTAG, "Added item " +  newCategory.toString());
@@ -175,9 +170,9 @@ public class CategoryActivity extends AppCompatActivity
                 categoryAdapter.notifyDataSetChanged();
             }
         }
-        else if(requestCode == MODIFY_CATEGORY)
+        else if(requestCode == App.MODIFY_ITEM_REQ)
         {
-            if(resultCode == MODIFY_CATEGORY_RESP)
+            if(resultCode == App.MODIFY_ITEM_RESP)
             {
                 Log.d(LOGTAG, "Modified position " + currentPosition);
                 BudgetCategory modifiedCategory = data.getExtras().getParcelable("modified_category");
@@ -186,7 +181,7 @@ public class CategoryActivity extends AppCompatActivity
                 Collections.sort(categories);
                 categoryAdapter.notifyDataSetChanged();
             }
-            else if(resultCode == DELETE_CATEGORY_RESP)
+            else if(resultCode == App.DELETE_ITEM_RESP)
             {
                 Log.d(LOGTAG, "Deleted position " + currentPosition);
                 db.deleteCategory(categories.get(currentPosition).getName());
