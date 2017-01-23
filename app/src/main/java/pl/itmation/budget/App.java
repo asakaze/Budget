@@ -92,8 +92,157 @@ public class App extends Application
         }
 
         Calendar date = GregorianCalendar.getInstance();
-        date.set(2017, Calendar.JUNE, 2);
+        date.set(2016, Calendar.JUNE, 2);
         BudgetEntry entry = new BudgetEntry("czynsz za maj", "czynsz", BudgetCategory.Type.EXPENSE, 640, date, "jan", "tydzień przed czasem");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.MAY, 12);
+        entry = new BudgetEntry("czynsz za kwiecień", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.APRIL, 25);
+        entry = new BudgetEntry("czynsz za marzec", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.APRIL, 13);
+        entry = new BudgetEntry("jedzenie", "zakupy", BudgetCategory.Type.EXPENSE, 1649, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.APRIL, 11);
+        entry = new BudgetEntry("lotto", "loteria", BudgetCategory.Type.INCOME, 106, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.APRIL, 12);
+        entry = new BudgetEntry("poker", "loteria", BudgetCategory.Type.EXPENSE, 1560, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.MARCH, 7);
+        entry = new BudgetEntry("czynsz za luty", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "janusz");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.FEBRUARY, 7);
+        entry = new BudgetEntry("czynsz za styczeń", "czynsz", BudgetCategory.Type.EXPENSE, 566, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.JANUARY, 7);
+        entry = new BudgetEntry("czynsz za grudzień", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.DECEMBER, 7);
+        entry = new BudgetEntry("czynsz za listopad", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.NOVEMBER, 7);
+        entry = new BudgetEntry("czynsz za październik", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.OCTOBER, 7);
+        entry = new BudgetEntry("czynsz", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.SEPTEMBER, 7);
+        entry = new BudgetEntry("czynsz", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.AUGUST, 7);
+        entry = new BudgetEntry("czynsz", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.JULY, 7);
+        entry = new BudgetEntry("czynsz", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.JUNE, 7);
+        entry = new BudgetEntry("czynsz", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.JUNE, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4800, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.JULY, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4800, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.AUGUST, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4800, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.AUGUST, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4000, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.SEPTEMBER, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4800, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.SEPTEMBER, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4000, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.OCTOBER, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4800, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.OCTOBER, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4000, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.NOVEMBER, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4800, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.NOVEMBER, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4000, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.DECEMBER, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4800, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2015, Calendar.DECEMBER, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4000, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.JANUARY, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4800, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.JANUARY, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4000, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.FEBRUARY, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4800, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.FEBRUARY, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4000, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.MARCH, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4800, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.MARCH, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4000, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.APRIL, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4800, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.APRIL, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4000, date, "jan");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.MAY, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4800, date, "ania");
+        db.createEntry(entry);
+
+        date.set(2016, Calendar.MAY, 7);
+        entry = new BudgetEntry("wypłata", "pensja", BudgetCategory.Type.INCOME, 4000, date, "jan");
+
         db.createEntry(entry);
     }
 

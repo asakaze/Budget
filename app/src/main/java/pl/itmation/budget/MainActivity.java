@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -97,9 +98,19 @@ public class MainActivity extends AppCompatActivity
                     entryType.append(" " + getString(R.string.none));
                 }
 
-                entryComment.setText(getString(R.string.desc_comment) + " " + currentEntry.getComment());
+                String comment = currentEntry.getComment();
+                entryComment.setText(getString(R.string.desc_comment) + " " );
+                if(comment == null || comment.equals(""))
+                {
+                    entryComment.append("Brak");
+                }
+                else
+                {
+                    entryComment.append(comment);
+                }
                 entryCategory.setText(getString(R.string.desc_category) + " " + currentEntry.getCategory());
-                entryDate.setText(getString(R.string.desc_date) + " " + currentEntry.getDate().toString());
+                SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy");
+                entryDate.setText(getString(R.string.desc_date) + " " + date.format(currentEntry.getDate().getTime()));
                 return convertView;
             }
         };

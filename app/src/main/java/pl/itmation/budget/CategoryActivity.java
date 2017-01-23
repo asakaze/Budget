@@ -107,7 +107,16 @@ public class CategoryActivity extends AppCompatActivity
                         categoryType.append(" " + getString(R.string.none));
                     }
 
-                    categoryComment.setText(getString(R.string.desc_comment) + " " + currentCategory.getComment());
+                    String comment = currentCategory.getComment();
+                    categoryComment.setText(getString(R.string.desc_comment) + " " );
+                    if(comment == null || comment.equals(""))
+                    {
+                        categoryComment.append("Brak");
+                    }
+                    else
+                    {
+                        categoryComment.append(comment);
+                    }
                     return convertView;
                 }
             };
