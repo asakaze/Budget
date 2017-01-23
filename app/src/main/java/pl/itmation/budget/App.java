@@ -3,6 +3,9 @@ package pl.itmation.budget;
 import android.app.Application;
 import android.util.Log;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 public class App extends Application
 {
     public DatabaseHandler db = null;
@@ -81,10 +84,17 @@ public class App extends Application
 
     private void seedEntries()
     {
-        if(db.getEntryCount() > 0)
+        int count = db.getEntryCount();
+        Log.d(LOGTAG, "Entry count " + count);
+        if(count > 0)
         {
             return;
         }
+
+        Calendar date = GregorianCalendar.getInstance();
+        date.set(2017, Calendar.JUNE, 2);
+        BudgetEntry entry = new BudgetEntry("czynsz za maj", "czynsz", BudgetCategory.Type.EXPENSE, 640, date, "jan", "tydzień przed czasem");
+        db.createEntry(entry);
     }
 
 }

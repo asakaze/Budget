@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
@@ -130,7 +130,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_TYPE, entry.getType().name());
         values.put(KEY_COMMENT, entry.getComment());
         values.put(KEY_OWNER, entry.getOwner());
-        values.put(KEY_DATE, entry.getDate().getTime());
+        values.put(KEY_DATE, entry.getDate().getTimeInMillis());
         values.put(KEY_CATEGORY, entry.getCategory());
 
         long id = db.insert(TABLE_ENTRY, null, values);
@@ -194,7 +194,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String category = cur.getString(cur.getColumnIndex(KEY_CATEGORY));
                 BudgetCategory.Type type = BudgetCategory.Type.valueOf(cur.getString(cur.getColumnIndex(KEY_TYPE)));
                 int value = cur.getInt(cur.getColumnIndex(KEY_VALUE));
-                Date date = new Date(cur.getLong(cur.getColumnIndex(KEY_DATE)));
+                Calendar date = Calendar.getInstance();
+                date.setTimeInMillis((cur.getLong(cur.getColumnIndex(KEY_DATE))));
                 String owner = cur.getString(cur.getColumnIndex(KEY_OWNER));
                 String comment = cur.getString(cur.getColumnIndex(KEY_COMMENT));
                 BudgetEntry entry = new BudgetEntry(id, name, category, type, value, date, owner, comment);
@@ -276,7 +277,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_TYPE, entry.getType().name());
         values.put(KEY_COMMENT, entry.getComment());
         values.put(KEY_OWNER, entry.getOwner());
-        values.put(KEY_DATE, entry.getDate().getTime());
+        values.put(KEY_DATE, entry.getDate().getTimeInMillis());
         values.put(KEY_CATEGORY, entry.getCategory());
 
         return db.update(TABLE_ENTRY, values, KEY_NAME + " = ?",

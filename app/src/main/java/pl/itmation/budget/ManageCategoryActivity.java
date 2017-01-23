@@ -152,7 +152,7 @@ public class ManageCategoryActivity extends AppCompatActivity
         type.setSelection(position);
 
         EditText value = (EditText) findViewById(R.id.value_input);
-        value.setText(category.getDefaultValue().toString());
+        value.setText(String.valueOf(category.getDefaultValue()));
         EditText comment = (EditText) findViewById(R.id.comment_input);
         comment.setText(category.getComment());
 

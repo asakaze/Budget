@@ -18,12 +18,18 @@
     <string name="action_add_category">Dodaj źródło</string>
     <string name="title_activity_category">Zarządzanie źródłami</string>
 
-    <!-- Strings related to manage category category activity -->
+    <!-- Strings related to entries and catagories -->
     <string name="title_activity_manage_category">Źródło</string>
     <string name="label_name">Nazwa</string>
     <string name="label_comment">Komentarz (opcjonalne)</string>
     <string name="label_value">Domyślna wartość w PLN (opcjonalne)</string>
-    <string name="label_type">Domyślne źródło</string>
+    <string name="label_type">Domyślne źródło (opcjonalnie)</string>
+    <string name="desc_value">Wartość:</string>
+    <string name="desc_type">Typ:</string>
+    <string name="desc_comment">Komentarz:</string>
+    <string name="desc_date">Data:</string>
+    <string name="desc_category">Źródło:</string>
+    <string name="pln"> PLN</string>
     <string name="button_create">Utwórz</string>
     <string name="button_modify">Modyfikuj</string>
     <string name="button_delete">Usuń</string>

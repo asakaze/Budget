@@ -1,7 +1,7 @@
 package pl.itmation.budget;
 
 
-import java.util.Date;
+import java.util.Calendar;
 
 class BudgetEntry {
 
@@ -10,7 +10,7 @@ class BudgetEntry {
     private String category;
     private BudgetCategory.Type type;
     private int value;
-    private Date date;
+    private Calendar date;
     private String comment;
     private String owner;
     private long id;
@@ -39,11 +39,11 @@ class BudgetEntry {
         this.comment = comment;
     }
 
-    public Date getDate() {
+    public Calendar getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Calendar date) {
         this.date = date;
     }
 
@@ -81,7 +81,7 @@ class BudgetEntry {
 
 
     public BudgetEntry(long id, String name, String category, BudgetCategory.Type type,
-                       int value, Date date, String owner, String comment) {
+                       int value, Calendar date, String owner, String comment) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -93,8 +93,18 @@ class BudgetEntry {
     }
 
     public BudgetEntry(long id, String name, String category, BudgetCategory.Type type,
-                       int value, Date date, String owner) {
+                       int value, Calendar date, String owner) {
         this(id, name, category, type, value, date, owner, null);
+    }
+
+    public BudgetEntry(String name, String category, BudgetCategory.Type type,
+                       int value, Calendar date, String owner) {
+        this(0, name, category, type, value, date, owner, null);
+    }
+
+    public BudgetEntry(String name, String category, BudgetCategory.Type type,
+                       int value, Calendar date, String owner, String comment) {
+        this(0, name, category, type, value, date, owner, comment);
     }
 
 }

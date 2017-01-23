@@ -4,7 +4,7 @@ package pl.itmation.budget;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-class BudgetCategory implements Parcelable {
+class BudgetCategory implements Parcelable, Comparable<BudgetCategory> {
 
     public enum Type {
         INCOME, EXPENSE
@@ -39,7 +39,7 @@ class BudgetCategory implements Parcelable {
         return name;
     }
 
-    public Integer getDefaultValue() {
+    public int getDefaultValue() {
         return defaultValue;
     }
 
@@ -173,5 +173,11 @@ class BudgetCategory implements Parcelable {
             return new BudgetCategory[size];
         }
     };
+
+    @Override
+    public int compareTo(BudgetCategory second)
+    {
+        return this.name.compareTo(second.getName());
+    }
 }
 

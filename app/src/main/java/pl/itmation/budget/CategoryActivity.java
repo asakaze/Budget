@@ -2,8 +2,6 @@ package pl.itmation.budget;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -16,12 +14,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-import static android.R.attr.category;
-import static android.R.attr.tag;
 
 public class CategoryActivity extends AppCompatActivity
 {
@@ -56,6 +52,7 @@ public class CategoryActivity extends AppCompatActivity
 
         db = ((App)getApplication()).db;
         categories = db.getAllCategories();
+        Collections.sort(categories);
         categoryAdapter = new ArrayAdapter<BudgetCategory>(this, 0, categories)
             {
                 @Override
@@ -81,33 +78,36 @@ public class CategoryActivity extends AppCompatActivity
 
                     categoryName.setText(currentCategory.getName());
                     int value = currentCategory.getDefaultValue();
+                    categoryValue.setText(getString(R.string.desc_value));
                     if(value != 0)
                     {
-                        categoryValue.setText(currentCategory.getDefaultValue().toString());
+                        categoryValue.append(String.valueOf(currentCategory.getDefaultValue())
+                                + " " + getString(R.string.pln));
                     }
                     else
                     {
-                        categoryValue.setText(getString(R.string.none));
+                        categoryValue.append(getString(R.string.none));
                     }
 
+                    categoryType.setText(getString(R.string.desc_type));
                     BudgetCategory.Type type = currentCategory.getDefaultType();
                     if(type != null)
                     {
                         if(type == BudgetCategory.Type.EXPENSE)
                         {
-                            categoryType.setText(getString(R.string.expense));
+                            categoryType.append(" " + getString(R.string.expense));
                         }
                         else if(type == BudgetCategory.Type.INCOME)
                         {
-                            categoryType.setText(getString(R.string.income));
+                            categoryType.append(" " + getString(R.string.income));
                         }
                     }
                     else
                     {
-                        categoryType.setText(getString(R.string.none));
+                        categoryType.append(" " + getString(R.string.none));
                     }
 
-                    categoryComment.setText(currentCategory.getComment());
+                    categoryComment.setText(getString(R.string.desc_comment) + " " + currentCategory.getComment());
                     return convertView;
                 }
             };
@@ -162,6 +162,7 @@ public class CategoryActivity extends AppCompatActivity
                 Log.d(LOGTAG, "Added item " +  newCategory.toString());
                 db.createCategory(newCategory);
                 categories.add(newCategory);
+                Collections.sort(categories);
                 categoryAdapter.notifyDataSetChanged();
             }
         }
@@ -173,6 +174,7 @@ public class CategoryActivity extends AppCompatActivity
                 BudgetCategory modifiedCategory = data.getExtras().getParcelable("modified_category");
                 db.updateCategory(modifiedCategory);
                 categories.set(currentPosition, modifiedCategory);
+                Collections.sort(categories);
                 categoryAdapter.notifyDataSetChanged();
             }
             else if(resultCode == DELETE_CATEGORY_RESP)
