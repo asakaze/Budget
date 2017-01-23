@@ -7,15 +7,82 @@ class BudgetEntry {
 
 
     private String name;
-    private BudgetCategory category;
+    private String category;
     private BudgetCategory.Type type;
-    private Integer value;
+    private int value;
     private Date date;
     private String comment;
     private String owner;
+    private long id;
 
-    public BudgetEntry(String name, BudgetCategory category, BudgetCategory.Type type,
-                       Integer value, Date date, String owner, String comment) {
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    public BudgetCategory.Type getType() {
+        return type;
+    }
+
+    public void setType(BudgetCategory.Type type) {
+        this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+
+    public BudgetEntry(long id, String name, String category, BudgetCategory.Type type,
+                       int value, Date date, String owner, String comment) {
+        this.id = id;
         this.name = name;
         this.category = category;
         this.type = type;
@@ -25,9 +92,9 @@ class BudgetEntry {
         this.owner = owner;
     }
 
-    public BudgetEntry(String name, BudgetCategory category, BudgetCategory.Type type,
-                       Integer value, Date date, String owner) {
-        this(name, category, type, value, date, owner, null);
+    public BudgetEntry(long id, String name, String category, BudgetCategory.Type type,
+                       int value, Date date, String owner) {
+        this(id, name, category, type, value, date, owner, null);
     }
 
 }

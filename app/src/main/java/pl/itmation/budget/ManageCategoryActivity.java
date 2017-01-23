@@ -105,7 +105,7 @@ public class ManageCategoryActivity extends AppCompatActivity
             return;
         }
 
-        Integer value = extractValue();
+        int value = extractValue();
         BudgetCategory.Type type = extractType();
         String comment = extractComment();
         category = new BudgetCategory.BudgetCategoryBuilder(name).defaultType(type).defaultValue(value).comment(comment).build();
@@ -171,18 +171,22 @@ public class ManageCategoryActivity extends AppCompatActivity
             nameInput.requestFocus();
             return null;
         }
-        else if(db.checkIfCategoryExists(name))
+        else if(db.checkIfCategoryExists(name) && mode == Mode.CREATE)
         {
             nameInput.setError(getString(R.string.error_field_unique));
             nameInput.requestFocus();
+            return null;
         }
         return nameInput.getText().toString();
     }
 
-    private Integer extractValue()
+    private int extractValue()
     {
         EditText valueInput = (EditText) findViewById(R.id.value_input);
-        if (valueInput.getText() == null) return null;
+        if (valueInput.getText().toString().equals(""))
+        {
+            return 0;
+        }
         return Integer.parseInt(valueInput.getText().toString());
     }
 

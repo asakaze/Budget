@@ -29,8 +29,62 @@ public class App extends Application
         seedUsers();
         seedCategories();
         seedEntries();
-
     }
 
+    private void seedUsers()
+    {
+        int count = db.getUserCount();
+        Log.d(LOGTAG, "User count " + count);
+        if(count > 0)
+        {
+            return;
+        }
+
+        db.createUser(new User("jan", "naj"));
+        db.createUser(new User("ania", "aina"));
+    }
+
+    private void seedCategories()
+    {
+        if(db.getCategoryCount() > 0)
+        {
+            return;
+        }
+
+        BudgetCategory category = new BudgetCategory.BudgetCategoryBuilder("czynsz").
+                defaultType(BudgetCategory.Type.EXPENSE).
+                defaultValue(600).
+                comment("płatne do 25").
+                build();
+        db.createCategory(category);
+
+        category = new BudgetCategory.BudgetCategoryBuilder("pensja").
+                defaultType(BudgetCategory.Type.EXPENSE).
+                defaultValue(4000).
+                build();
+        db.createCategory(category);
+
+        category = new BudgetCategory.BudgetCategoryBuilder("odsetki").
+                defaultType(BudgetCategory.Type.INCOME).
+                build();
+        db.createCategory(category);
+
+        category = new BudgetCategory.BudgetCategoryBuilder("zakupy").
+                defaultType(BudgetCategory.Type.EXPENSE).
+                build();
+        db.createCategory(category);
+
+        category = new BudgetCategory.BudgetCategoryBuilder("loteria").
+                build();
+        db.createCategory(category);
+    }
+
+    private void seedEntries()
+    {
+        if(db.getEntryCount() > 0)
+        {
+            return;
+        }
+    }
 
 }

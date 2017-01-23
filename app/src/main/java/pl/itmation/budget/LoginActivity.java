@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,19 +35,20 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private UserLoginTask mAuthTask = null;
-
-    private AutoCompleteTextView mLoginView;
+    private DatabaseHandler db = null;
+    private TextView mLoginView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private static final String LOGTAG = LoginActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mLoginView = (AutoCompleteTextView) findViewById(R.id.login);
-        populateAutoComplete();
+        db = ((App)getApplication()).db;
+        mLoginView = (TextView) findViewById(R.id.login);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -70,13 +72,6 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-    }
-
-    private void populateAutoComplete() {
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, DUMMY_CREDENTIALS);
-        mLoginView.setAdapter(adapter);
     }
 
     private void attemptLogin() {
@@ -166,12 +161,22 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            if (mLogin.equals("user") || mLogin.equals(("admin")))
+            User user = db.getUser(mLogin);
+            if(user != null)
             {
-                return true;
+                if(user.getPassword().equals(mPassword))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
-
-            return false;
+            else
+            {
+                return false;
+            }
         }
 
         @Override

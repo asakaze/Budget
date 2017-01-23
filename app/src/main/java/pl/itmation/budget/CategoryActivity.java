@@ -80,8 +80,33 @@ public class CategoryActivity extends AppCompatActivity
                     TextView categoryComment = ((CategoryViewHolder)convertView.getTag()).comment;
 
                     categoryName.setText(currentCategory.getName());
-                    categoryValue.setText(currentCategory.getDefaultValue().toString());
-                    categoryType.setText(currentCategory.getDefaultType().toString());
+                    int value = currentCategory.getDefaultValue();
+                    if(value != 0)
+                    {
+                        categoryValue.setText(currentCategory.getDefaultValue().toString());
+                    }
+                    else
+                    {
+                        categoryValue.setText(getString(R.string.none));
+                    }
+
+                    BudgetCategory.Type type = currentCategory.getDefaultType();
+                    if(type != null)
+                    {
+                        if(type == BudgetCategory.Type.EXPENSE)
+                        {
+                            categoryType.setText(getString(R.string.expense));
+                        }
+                        else if(type == BudgetCategory.Type.INCOME)
+                        {
+                            categoryType.setText(getString(R.string.income));
+                        }
+                    }
+                    else
+                    {
+                        categoryType.setText(getString(R.string.none));
+                    }
+
                     categoryComment.setText(currentCategory.getComment());
                     return convertView;
                 }

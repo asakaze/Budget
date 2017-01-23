@@ -27,10 +27,13 @@
     <string name="button_create">Utwórz</string>
     <string name="button_modify">Modyfikuj</string>
     <string name="button_delete">Usuń</string>
+    <string name="expense">Wydatek</string>
+    <string name="income">Dochód</string>
+    <string name="none">Brak</string>
     <string-array name="type_array">
-        <item>Brak</item>
-        <item>Przychód</item>
-        <item>Wydatek</item>
+        <item>@string/none</item>
+        <item>@string/income</item>
+        <item>@string/expense</item>
     </string-array>
 
 </resources>

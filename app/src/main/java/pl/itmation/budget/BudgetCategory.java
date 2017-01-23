@@ -61,6 +61,21 @@ class BudgetCategory implements Parcelable {
             this.defaultType = t;
             return this;
         }
+        public BudgetCategoryBuilder defaultType(String s) {
+            if(s.equals(Type.EXPENSE.name()))
+            {
+                this.defaultType = Type.EXPENSE;
+            }
+            else if(s.equals(Type.INCOME.name()))
+            {
+                this.defaultType = Type.INCOME;
+            }
+            else
+            {
+                this.defaultType = null;
+            }
+            return this;
+        }
 
         public BudgetCategoryBuilder defaultValue(int d) {
             this.defaultValue = d;
@@ -85,8 +100,16 @@ class BudgetCategory implements Parcelable {
     }
 
     public BudgetCategory(Parcel parcel){
-        defaultType = Type.valueOf(parcel.readString());
         name = parcel.readString();
+        String conv = parcel.readString();
+        if(conv != null && conv != "")
+        {
+            defaultType = Type.valueOf(conv);
+        }
+        else
+        {
+            defaultType = null;
+        }
         defaultValue = parcel.readInt();
         comment = parcel.readString();
     }
@@ -128,8 +151,15 @@ class BudgetCategory implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeString(this.defaultType.name());
         parcel.writeString(name);
+        if(this.defaultType != null)
+        {
+            parcel.writeString(this.defaultType.name());
+        }
+        else
+        {
+            parcel.writeString(null);
+        }
         parcel.writeInt(defaultValue);
         parcel.writeString(comment);
     }
