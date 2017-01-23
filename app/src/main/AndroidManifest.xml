@@ -3,7 +3,7 @@
     package="pl.itmation.budget">
 
     <application
-        android:name="pl.itmation.budget.App"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -40,6 +40,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pl.itmation.budget.CategoryActivity" />
         </activity>
+        <activity android:name=".ManageEntryActivity"></activity>
     </application>
 
 </manifest>

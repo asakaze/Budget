@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity
         Log.d(LOGTAG, "Logged as user: " + currentUser);
         db = ((App)getApplication()).db;
         entries = db.getAllEntries();
+        Collections.sort(entries);
 
         entryAdapter = new ArrayAdapter<BudgetEntry>(this, 0, entries)
         {

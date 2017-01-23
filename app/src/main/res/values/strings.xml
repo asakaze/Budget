@@ -18,12 +18,12 @@
     <string name="action_add_category">Dodaj źródło</string>
     <string name="title_activity_category">Zarządzanie źródłami</string>
 
-    <!-- Strings related to entries and catagories -->
+    <!-- Strings related to catagories -->
     <string name="title_activity_manage_category">Źródło</string>
     <string name="label_name">Nazwa</string>
     <string name="label_comment">Komentarz (opcjonalne)</string>
     <string name="label_value">Domyślna wartość w PLN (opcjonalne)</string>
-    <string name="label_type">Domyślne źródło (opcjonalnie)</string>
+    <string name="label_type">Domyślny typ (opcjonalnie)</string>
     <string name="desc_value">Wartość:</string>
     <string name="desc_type">Typ:</string>
     <string name="desc_comment">Komentarz:</string>
@@ -41,5 +41,13 @@
         <item>@string/income</item>
         <item>@string/expense</item>
     </string-array>
+
+    <!-- Strings related to entries-->
+    <string name="title_activity_manage_entry">Pozycja</string>
+    <string name="entry_label_comment">Komentarz (opcjonalne)</string>
+    <string name="entry_label_value">Wartość</string>
+    <string name="entry_label_type">Typ</string>
+    <string name="entry_label_date">Data</string>
+    <string name="entry_label_category">Źródło</string>
 
 </resources>

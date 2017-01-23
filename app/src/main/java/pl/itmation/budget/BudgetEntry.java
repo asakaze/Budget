@@ -3,9 +3,8 @@ package pl.itmation.budget;
 
 import java.util.Calendar;
 
-class BudgetEntry {
-
-
+class BudgetEntry implements Comparable<BudgetEntry>
+{
     private String name;
     private String category;
     private BudgetCategory.Type type;
@@ -107,4 +106,9 @@ class BudgetEntry {
         this(0, name, category, type, value, date, owner, comment);
     }
 
+    @Override
+    public int compareTo(BudgetEntry second)
+    {
+        return second.getDate().compareTo(this.date);
+    }
 }
