@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="pl.itmation.budget.MainActivity">
+    <item
+        android:id="@+id/open_monthly_graph"
+        android:orderInCategory="100"
+        android:title="@string/title_activity_graph_monthly"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/open_share_graph"
+        android:orderInCategory="100"
+        android:title="@string/title_activity_graph_share"
+        app:showAsAction="never" />
+</menu>

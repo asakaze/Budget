@@ -1,10 +1,13 @@
 package pl.itmation.budget;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,11 +17,7 @@ import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -27,7 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class GraphActivity extends AppCompatActivity
+public class GraphMonthlyActivity extends AppCompatActivity
 {
     static class ViewHolder
     {
@@ -35,17 +34,18 @@ public class GraphActivity extends AppCompatActivity
         BarChart monthlyChart;
     }
 
-    private static final String LOGTAG = GraphActivity.class.getSimpleName();
+    private static final String LOGTAG = GraphMonthlyActivity.class.getSimpleName();
     private ArrayList<BudgetEntry> entries = null;
     private DatabaseHandler db = null;
     private ArrayAdapter<String> yearAdapter = null;
+    private ArrayAdapter<CharSequence> typeAdapter = null;
     private ViewHolder viewHolder = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_graph);
+        setContentView(R.layout.activity_graph_monthly);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -66,6 +66,11 @@ public class GraphActivity extends AppCompatActivity
     }
 
     private void populateSpinners()
+    {
+        populateMonthlyBalanceSpinner();
+    }
+
+    private void populateMonthlyBalanceSpinner()
     {
         ArrayList<String> years = new ArrayList<>();
         Set<String> uniqueYears = new HashSet<>();
@@ -103,7 +108,7 @@ public class GraphActivity extends AppCompatActivity
 
     private void createMonthlyGraph()
     {
-        viewHolder.monthlyChart.setDragEnabled(true);
+        viewHolder.monthlyChart.setTouchEnabled(true);
         List<BarEntry> graphEntries = new ArrayList<BarEntry>();
         HashMap<Integer, Integer> monthBalance = getMonthlyBalance();
 
@@ -155,5 +160,33 @@ public class GraphActivity extends AppCompatActivity
         Log.d(LOGTAG, "Monthly balance = " + monthBalance.toString());
 
         return monthBalance;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_graph, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch(item.getItemId())
+        {
+            case R.id.open_monthly_graph:
+            {
+                return true;
+            }
+            case R.id.open_share_graph:
+            {
+                Intent intent = new Intent(GraphMonthlyActivity.this, GraphShareActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            }
+        }
+        return false;
     }
 }

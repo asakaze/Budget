@@ -46,6 +46,10 @@
         <item>@string/income</item>
         <item>@string/expense</item>
     </string-array>
+    <string-array name="type_array_no_null">
+        <item>@string/income</item>
+        <item>@string/expense</item>
+    </string-array>
 
     <!-- Strings related to entries-->
     <string name="title_activity_manage_entry">Pozycja</string>
@@ -62,8 +66,9 @@
     <string name="error_wrong_date">Wymagany format daty:</string>
 
     <!-- Strings related to entries-->
-    <string name="title_activity_graph">Zestawienia</string>
-    <string name="content_graph_monthly_desc">Miesięczy bilans</string>
+    <string name="title_activity_graph_monthly">Miesięczy bilans</string>
     <string name="content_graph_year_selection_label">Wybierz rok</string>
+    <string name="content_graph_type_selection_label">Wybierz typ</string>
+    <string name="title_activity_graph_share">Udział źródeł w bilansie</string>
 
 </resources>

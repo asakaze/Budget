@@ -2,9 +2,7 @@ package pl.itmation.budget;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -321,7 +319,7 @@ public class MainActivity extends AppCompatActivity
 
     private void onGraphsMenuItemSelected()
     {
-        Intent intent = new Intent(MainActivity.this, GraphActivity.class);
+        Intent intent = new Intent(MainActivity.this, GraphMonthlyActivity.class);
         startActivity(intent);
     }
 

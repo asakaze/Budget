@@ -50,8 +50,17 @@
                 android:value="pl.itmation.budget.MainActivity" />
         </activity>
         <activity
-            android:name=".GraphActivity"
-            android:label="@string/title_activity_graph"
+            android:name=".GraphMonthlyActivity"
+            android:label="@string/title_activity_graph_monthly"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pl.itmation.budget.MainActivity" />
+        </activity>
+        <activity
+            android:name=".GraphShareActivity"
+            android:label="@string/title_activity_graph_share"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
