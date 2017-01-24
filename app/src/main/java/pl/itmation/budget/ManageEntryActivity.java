@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,11 +15,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -46,8 +46,10 @@ public class ManageEntryActivity extends AppCompatActivity
     private ArrayAdapter<CharSequence> typeSpinnerAdapter = null;
     private InputFields inputFields = null;
     private SharedPreferences session = null;
-    private boolean valueProvidedByUser = false;
-    private boolean typeProvidedByUser = false;
+    private boolean valueSetByUser = false;
+    private boolean typeSetByUser = false;
+    private boolean valueSetFromDefaults = false;
+    private boolean typeSetFromDefaults = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -119,10 +121,21 @@ public class ManageEntryActivity extends AppCompatActivity
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
             {
-                String name = inputFields.category.getSelectedItem().toString();
-                if(!TextUtils.isEmpty(name))
+                String typeName = inputFields.type.getSelectedItem().toString();
+                if(!TextUtils.isEmpty(typeName) && !typeSetFromDefaults)
                 {
-                    typeProvidedByUser = true;
+                    typeSetByUser = true;
+                    Log.d(LOGTAG, "User edited type");
+                }
+                else if(typeSetFromDefaults)
+                {
+                    Log.d(LOGTAG, "Type filled from defaults");
+                    typeSetFromDefaults = false;
+                }
+                else if(TextUtils.isEmpty(typeName) && !typeSetFromDefaults)
+                {
+                    typeSetByUser = false;
+                    Log.d(LOGTAG, "User cleared type");
                 }
             }
 
@@ -136,12 +149,41 @@ public class ManageEntryActivity extends AppCompatActivity
 
     private void setListenerOnValue()
     {
-        inputFields.value.setOnClickListener(new View.OnClickListener()
+        inputFields.value.addTextChangedListener(new TextWatcher()
         {
             @Override
-            public void onClick(View v)
+            public void afterTextChanged(Editable s)
             {
-                valueProvidedByUser = true;
+                if(!valueSetFromDefaults)
+                {
+                    if(TextUtils.isEmpty(s.toString()) && valueSetByUser)
+                    {
+                        valueSetByUser = false;
+                        Log.d(LOGTAG, "User cleared value");
+                    }
+                    else
+                    {
+                        valueSetByUser = true;
+                        Log.d(LOGTAG, "User edited value: " + s.toString());
+                    }
+                }
+                else
+                {
+                    Log.d(LOGTAG, "Value filled from defaults");
+                    valueSetFromDefaults = false;
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after)
+            {
+                return;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                return;
             }
         });
     }
@@ -153,10 +195,11 @@ public class ManageEntryActivity extends AppCompatActivity
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
             {
-                String name = inputFields.category.getSelectedItem().toString();
-                if(!TextUtils.isEmpty(name))
+                String categoryName = inputFields.category.getSelectedItem().toString();
+                if(!TextUtils.isEmpty(categoryName))
                 {
-                    fillDefaultValues(name);
+                    Log.d(LOGTAG, "Setting defaults for category " + categoryName);
+                    fillDefaultValues(categoryName);
                 }
             }
 
@@ -169,14 +212,33 @@ public class ManageEntryActivity extends AppCompatActivity
             private void fillDefaultValues(String name)
             {
                 BudgetCategory category = db.getCategory(name);
-                if((category.getDefaultType() != null) && !typeProvidedByUser)
+                if(!typeSetByUser)
                 {
-                    int position = category.getDefaultType().ordinal() + 1;
+                    int position = 0;
+                    if(category.getDefaultType() != null)
+                    {
+                        position = category.getDefaultType().ordinal() + 1;
+                        Log.d(LOGTAG, "Default type is " + category.getDefaultType().name());
+                    }
+                    else
+                    {
+                        Log.d(LOGTAG, "No default type");
+                    }
+
+                    typeSetFromDefaults = true;
                     inputFields.type.setSelection(position);
                 }
-                if((category.getDefaultValue() > 0) && !valueProvidedByUser)
+                if((category.getDefaultValue() >= 0) && !valueSetByUser)
                 {
-                    inputFields.value.setText(String.valueOf(category.getDefaultValue()));
+                    valueSetFromDefaults = true;
+                    if((category.getDefaultValue() > 0))
+                    {
+                        inputFields.value.setText(String.valueOf(category.getDefaultValue()));
+                    }
+                    else
+                    {
+                        inputFields.value.setText("");
+                    }
                 }
             }
         });

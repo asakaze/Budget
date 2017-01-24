@@ -17,4 +17,18 @@
         android:orderInCategory="100"
         android:title="@string/logout"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/show_income"
+        android:orderInCategory="100"
+        android:title="@string/show_income"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/show_expenses"
+        android:orderInCategory="100"
+        android:title="@string/show_expenses"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never" />
 </menu>

@@ -13,6 +13,8 @@
     <string name="action_manage_category">Zarządzaj źródłami</string>
     <string name="title_activity_main">Budżet</string>
     <string name="logout">Wyloguj</string>
+    <string name="show_expenses">Pokazuj wydatki</string>
+    <string name="show_income">Pokazuj dochody</string>
     <string name="welcom">Witaj, </string>
     <string name="not_the_owner">Nie możesz modyfikować pozycji dodanych przez innego użytkownika</string>
 

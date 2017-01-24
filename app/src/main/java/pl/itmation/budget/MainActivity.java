@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -173,26 +174,75 @@ public class MainActivity extends AppCompatActivity
         {
             case R.id.manage_category:
             {
-                Intent intent = new Intent(MainActivity.this, CategoryActivity.class);
-                startActivity(intent);
+                onMenageCategoryMenuItemSelected();
                 return true;
             }
             case R.id.add_entry:
             {
-                Intent intent = new Intent(MainActivity.this, ManageEntryActivity.class);
-                intent.putExtra("request_code", App.CREATE_ITEM_REQ);
-                startActivityForResult(intent, App.CREATE_ITEM_REQ);
+                onAddItemMenuItemSelected();
                 return true;
             }
             case R.id.logout:
             {
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+                onLogoutMenuItemSelected();
+                return true;
+            }
+            case R.id.show_income:
+            {
+                onShowIncomeMenuItemSelected(item);
+                return true;
+            }
+            case R.id.show_expenses:
+            {
+                onShowExpensesMenuItemSelected(item);
                 return true;
             }
         }
         return false;
+    }
+
+    private void onMenageCategoryMenuItemSelected()
+    {
+        Intent intent = new Intent(MainActivity.this, CategoryActivity.class);
+        startActivity(intent);
+    }
+
+    private void onAddItemMenuItemSelected()
+    {
+        Intent intent = new Intent(MainActivity.this, ManageEntryActivity.class);
+        intent.putExtra("request_code", App.CREATE_ITEM_REQ);
+        startActivityForResult(intent, App.CREATE_ITEM_REQ);
+    }
+
+    private void onLogoutMenuItemSelected()
+    {
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void onShowIncomeMenuItemSelected(MenuItem item)
+    {
+        if(item.isChecked())
+        {
+            item.setChecked(false);
+        }
+        else
+        {
+            item.setChecked(true);
+        }
+    }
+
+    private void onShowExpensesMenuItemSelected(MenuItem item)
+    {
+        if(item.isChecked())
+        {
+            item.setChecked(false);
+        }
+        else
+        {
+            item.setChecked(true);
+        }
     }
 
     @Override
