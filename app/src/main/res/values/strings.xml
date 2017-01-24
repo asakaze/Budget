@@ -15,6 +15,7 @@
     <string name="logout">Wyloguj</string>
     <string name="show_expenses">Pokazuj wydatki</string>
     <string name="show_income">Pokazuj dochody</string>
+    <string name="graphs">Pokaż zestawienia</string>
     <string name="welcom">Witaj, </string>
     <string name="not_the_owner">Nie możesz modyfikować pozycji dodanych przez innego użytkownika</string>
 
@@ -59,4 +60,10 @@
     <string name="error_cannot_parse">Wartość nie jest liczbą lub zbyt duża (zakres do 2147483647)</string>
     <string name="error_wrong_value">Wartość musi być większa od 0</string>
     <string name="error_wrong_date">Wymagany format daty:</string>
+
+    <!-- Strings related to entries-->
+    <string name="title_activity_graph">Zestawienia</string>
+    <string name="content_graph_monthly_desc">Miesięczy bilans</string>
+    <string name="content_graph_year_selection_label">Wybierz rok</string>
+
 </resources>

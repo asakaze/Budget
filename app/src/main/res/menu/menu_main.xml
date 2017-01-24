@@ -31,4 +31,9 @@
         android:checkable="true"
         android:checked="true"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/graphs"
+        android:orderInCategory="100"
+        android:title="@string/graphs"
+        app:showAsAction="never" />
 </menu>

@@ -254,6 +254,11 @@ public class MainActivity extends AppCompatActivity
                 onShowExpensesMenuItemSelected(item);
                 return true;
             }
+            case R.id.graphs:
+            {
+                onGraphsMenuItemSelected();
+                return true;
+            }
         }
         return false;
     }
@@ -312,6 +317,12 @@ public class MainActivity extends AppCompatActivity
             Log.d(LOGTAG, "Showing expenses");
             entryAdapter.notifyDataSetChanged();
         }
+    }
+
+    private void onGraphsMenuItemSelected()
+    {
+        Intent intent = new Intent(MainActivity.this, GraphActivity.class);
+        startActivity(intent);
     }
 
     @Override
