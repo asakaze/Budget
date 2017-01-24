@@ -48,6 +48,24 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="10dp">
             <TextView
+                android:id="@+id/content_manage_entry_category_label"
+                android:text="@string/entry_label_category"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+
+            <Spinner
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:id="@+id/content_manage_entry_spinner_category" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp">
+            <TextView
                 android:id="@+id/content_manage_entry_type_label"
                 android:text="@string/entry_label_type"
                 android:layout_width="0dp"
@@ -122,24 +140,6 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:inputType="textPersonName" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="10dp">
-            <TextView
-                android:id="@+id/content_manage_entry_category_label"
-                android:text="@string/entry_label_category"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content" />
-
-            <Spinner
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:id="@+id/content_manage_entry_spinner_category" />
         </TableRow>
 
         <TableRow

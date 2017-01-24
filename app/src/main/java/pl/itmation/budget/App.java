@@ -102,7 +102,7 @@ public class App extends Application
         db.createEntry(entry);
 
         date.set(2016, Calendar.MAY, 12);
-        entry = new BudgetEntry("czynsz za kwiecień", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "jan");
+        entry = new BudgetEntry("czynsz za kwiecien", "czynsz", BudgetCategory.Type.EXPENSE, 649, date, "jan");
         db.createEntry(entry);
 
         date.set(2016, Calendar.APRIL, 25);

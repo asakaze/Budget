@@ -40,7 +40,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pl.itmation.budget.CategoryActivity" />
         </activity>
-        <activity android:name=".ManageEntryActivity"></activity>
+        <activity
+            android:name=".ManageEntryActivity"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/title_activity_manage_entry"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pl.itmation.budget.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

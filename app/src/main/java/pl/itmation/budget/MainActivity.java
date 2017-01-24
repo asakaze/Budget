@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences session = getApplicationContext().getSharedPreferences(LoginActivity.SESSION, MODE_PRIVATE);
         currentUser = session.getString(LoginActivity.SESSION_LOGIN, "");
         Log.d(LOGTAG, "Logged as user: " + currentUser);
+        setTitle(getString(R.string.welcom) + " " + currentUser);
         db = ((App) getApplication()).db;
         entries = db.getAllEntries();
         Collections.sort(entries);
@@ -57,65 +61,76 @@ public class MainActivity extends AppCompatActivity
         entryAdapter = new ArrayAdapter<BudgetEntry>(this, 0, entries)
         {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent)
+            public View getView(int position, View view, ViewGroup parent)
             {
                 BudgetEntry currentEntry = entries.get(position);
 
-                if(convertView == null)
+                if(view == null)
                 {
-                    convertView = getLayoutInflater().inflate(R.layout.entry_item, null, false);
-                    MainActivity.EntryViewHolder viewHolder = new MainActivity.EntryViewHolder();
-                    viewHolder.name = (TextView) convertView.findViewById(R.id.entry_item_name);
-                    viewHolder.value = (TextView) convertView.findViewById(R.id.entry_item_value);
-                    viewHolder.type = (TextView) convertView.findViewById(R.id.entry_item_type);
-                    viewHolder.comment = (TextView) convertView.findViewById(R.id.entry_item_comment);
-                    viewHolder.category = (TextView) convertView.findViewById(R.id.entry_item_category);
-                    viewHolder.date = (TextView) convertView.findViewById(R.id.entry_item_date);
-                    convertView.setTag(viewHolder);
+                    view = initializeView();
                 }
 
-                TextView entryName = ((MainActivity.EntryViewHolder) convertView.getTag()).name;
-                TextView entryValue = ((MainActivity.EntryViewHolder) convertView.getTag()).value;
-                TextView entryType = ((MainActivity.EntryViewHolder) convertView.getTag()).type;
-                TextView entryComment = ((MainActivity.EntryViewHolder) convertView.getTag()).comment;
-                TextView entryDate = ((MainActivity.EntryViewHolder) convertView.getTag()).date;
-                TextView entryCategory = ((MainActivity.EntryViewHolder) convertView.getTag()).category;
+                EntryViewHolder viewHolder = recreateViewHolder(view);
+                setFields(currentEntry, viewHolder);
 
-                entryName.setText(currentEntry.getName());
-                entryValue.setText(getString(R.string.desc_value));
-                entryValue.append(String.valueOf(currentEntry.getValue()) + " " + getString(R.string.pln));
-                entryType.setText(getString(R.string.desc_type));
+                return view;
+            }
+
+            private View initializeView()
+            {
+                View view = getLayoutInflater().inflate(R.layout.entry_item, null, false);
+                EntryViewHolder viewHolder = new EntryViewHolder();
+                viewHolder.name = (TextView) view.findViewById(R.id.entry_item_name);
+                viewHolder.value = (TextView) view.findViewById(R.id.entry_item_value);
+                viewHolder.type = (TextView) view.findViewById(R.id.entry_item_type);
+                viewHolder.comment = (TextView) view.findViewById(R.id.entry_item_comment);
+                viewHolder.category = (TextView) view.findViewById(R.id.entry_item_category);
+                viewHolder.date = (TextView) view.findViewById(R.id.entry_item_date);
+                view.setTag(viewHolder);
+                return view;
+            }
+
+            private EntryViewHolder recreateViewHolder(View view)
+            {
+                EntryViewHolder viewHolder = new EntryViewHolder();
+                viewHolder.name = ((EntryViewHolder) view.getTag()).name;
+                viewHolder.value = ((EntryViewHolder) view.getTag()).value;
+                viewHolder.type = ((EntryViewHolder) view.getTag()).type;
+                viewHolder.comment = ((EntryViewHolder) view.getTag()).comment;
+                viewHolder.date = ((EntryViewHolder) view.getTag()).date;
+                viewHolder.category = ((EntryViewHolder) view.getTag()).category;
+                return viewHolder;
+            }
+
+            private void setFields(BudgetEntry currentEntry, EntryViewHolder viewHolder)
+            {
+                viewHolder.name.setText(currentEntry.getName());
+
+                viewHolder.value.setText(getString(R.string.desc_value));
+                viewHolder.value.append(String.valueOf(currentEntry.getValue()) + " " + getString(R.string.pln));
+
+                viewHolder.type.setText(getString(R.string.desc_type));
                 BudgetCategory.Type type = currentEntry.getType();
-                if(type != null)
-                {
-                    if(type == BudgetCategory.Type.EXPENSE)
-                    {
-                        entryType.append(" " + getString(R.string.expense));
-                    }
-                    else if(type == BudgetCategory.Type.INCOME)
-                    {
-                        entryType.append(" " + getString(R.string.income));
-                    }
-                }
-                else
-                {
-                    entryType.append(" " + getString(R.string.none));
-                }
+                String typeStr = (type == BudgetCategory.Type.EXPENSE)
+                                 ? getString(R.string.expense)
+                                 : getString(R.string.income);
+                viewHolder.type.append(" " + typeStr);
 
                 String comment = currentEntry.getComment();
-                entryComment.setText(getString(R.string.desc_comment) + " ");
-                if(comment == null || comment.equals(""))
+                viewHolder.comment.setText(getString(R.string.desc_comment) + " ");
+                if(TextUtils.isEmpty(comment))
                 {
-                    entryComment.append("Brak");
+                    viewHolder.comment.append(getString(R.string.none));
                 }
                 else
                 {
-                    entryComment.append(comment);
+                    viewHolder.comment.append(comment);
                 }
-                entryCategory.setText(getString(R.string.desc_category) + " " + currentEntry.getCategory());
-                SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy");
-                entryDate.setText(getString(R.string.desc_date) + " " + date.format(currentEntry.getDate().getTime()));
-                return convertView;
+
+                viewHolder.category.setText(getString(R.string.desc_category) + " " + currentEntry.getCategory());
+
+                viewHolder.date.setText(getString(R.string.desc_date) + " " +
+                                        BudgetEntry.dateFormatter.format(currentEntry.getDate().getTime()));
             }
         };
         ListView list = (ListView) findViewById(R.id.budget_list);
@@ -126,12 +141,19 @@ public class MainActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowId)
             {
                 BudgetEntry currentEntry = entries.get(position);
-                currentPosition = position;
-                Intent intent = new Intent(MainActivity.this, ManageEntryActivity.class);
-                intent.putExtra("request_code", App.MODIFY_ITEM_REQ);
-                intent.putExtra("editable_item", currentEntry);
-                Log.d(LOGTAG, "Sending intent to modify item on postition " + String.valueOf(position));
-                startActivityForResult(intent, App.MODIFY_ITEM_REQ);
+                if(currentUser.equals(currentEntry.getOwner()))
+                {
+                    currentPosition = position;
+                    Intent intent = new Intent(MainActivity.this, ManageEntryActivity.class);
+                    intent.putExtra("request_code", App.MODIFY_ITEM_REQ);
+                    intent.putExtra("editable_item", currentEntry);
+                    Log.d(LOGTAG, "Sending intent to modify item on postition " + String.valueOf(position));
+                    startActivityForResult(intent, App.MODIFY_ITEM_REQ);
+                }
+                else
+                {
+                    Toast.makeText(view.getContext(), getString(R.string.not_the_owner), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -156,10 +178,19 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
             case R.id.add_entry:
+            {
                 Intent intent = new Intent(MainActivity.this, ManageEntryActivity.class);
                 intent.putExtra("request_code", App.CREATE_ITEM_REQ);
                 startActivityForResult(intent, App.CREATE_ITEM_REQ);
                 return true;
+            }
+            case R.id.logout:
+            {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            }
         }
         return false;
     }
@@ -171,34 +202,60 @@ public class MainActivity extends AppCompatActivity
         {
             if(resultCode == App.CREATE_ITEM_RESP)
             {
-                BudgetEntry newEntry = data.getExtras().getParcelable("new_entry");
-                long id = db.createEntry(newEntry);
-                newEntry.setId(id);
-                entries.add(newEntry);
-                Log.d(LOGTAG, "Added entry " + newEntry.toString());
-                Collections.sort(entries);
-                entryAdapter.notifyDataSetChanged();
+                addNewEntry(data);
+            }
+            else
+            {
+                Log.w(LOGTAG, "Unknown respose " + String.valueOf(resultCode));
             }
         }
         else if(requestCode == App.MODIFY_ITEM_REQ)
         {
             if(resultCode == App.MODIFY_ITEM_RESP)
             {
-                BudgetEntry modifiedEntry = data.getExtras().getParcelable("modified_entry");
-                Log.d(LOGTAG, "Modified entry at position " + currentPosition + "\n" + modifiedEntry.toString());
-                db.updateEntry(modifiedEntry);
-                entries.set(currentPosition, modifiedEntry);
-                Collections.sort(entries);
-                entryAdapter.notifyDataSetChanged();
+                modifyEntry(data);
             }
             else if(resultCode == App.DELETE_ITEM_RESP)
             {
-                Log.d(LOGTAG,
-                      "Deleted entry at position " + currentPosition + "\n" + entries.get(currentPosition).toString());
-                db.deleteEntry(entries.get(currentPosition).getId());
-                entries.remove(currentPosition);
-                entryAdapter.notifyDataSetChanged();
+                deleteEntry(data);
+            }
+            else
+            {
+                Log.w(LOGTAG, "Unknown respose " + String.valueOf(resultCode));
             }
         }
+        else
+        {
+            Log.w(LOGTAG, "Unknown request " + String.valueOf(requestCode));
+        }
+    }
+
+    private void addNewEntry(Intent data)
+    {
+        BudgetEntry newEntry = data.getExtras().getParcelable("new_entry");
+        long id = db.createEntry(newEntry);
+        newEntry.setId(id);
+        entries.add(newEntry);
+        Log.d(LOGTAG, "Added entry " + newEntry.toString());
+        Collections.sort(entries);
+        entryAdapter.notifyDataSetChanged();
+    }
+
+    private void modifyEntry(Intent data)
+    {
+        BudgetEntry modifiedEntry = data.getExtras().getParcelable("modified_entry");
+        Log.d(LOGTAG, "Modified entry at position " + currentPosition + "\n" + modifiedEntry.toString());
+        db.updateEntry(modifiedEntry);
+        entries.set(currentPosition, modifiedEntry);
+        Collections.sort(entries);
+        entryAdapter.notifyDataSetChanged();
+    }
+
+    private void deleteEntry(Intent data)
+    {
+        Log.d(LOGTAG, "Deleted entry at position " + currentPosition + "\n" + entries.get(currentPosition).toString());
+        db.deleteEntry(entries.get(currentPosition).getId());
+        entries.remove(currentPosition);
+        entryAdapter.notifyDataSetChanged();
     }
 }

@@ -12,7 +12,9 @@
     <!-- Strings related to main activity -->
     <string name="action_manage_category">Zarządzaj źródłami</string>
     <string name="title_activity_main">Budżet</string>
-
+    <string name="logout">Wyloguj</string>
+    <string name="welcom">Witaj, </string>
+    <string name="not_the_owner">Nie możesz modyfikować pozycji dodanych przez innego użytkownika</string>
 
     <!-- Strings related to category activity -->
     <string name="action_add_category">Dodaj źródło</string>

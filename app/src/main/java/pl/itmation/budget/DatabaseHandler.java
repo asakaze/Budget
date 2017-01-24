@@ -260,7 +260,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = fillCategoryValues(category);
-
+        Log.d(LOGTAG, "Updating db with values " + values.toString());
         return db.update(TABLE_CATEGORY, values, KEY_NAME + " = ?", new String[]{category.getName()});
     }
 
@@ -268,8 +268,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = fillEntryValues(entry);
-
-        return db.update(TABLE_ENTRY, values, KEY_NAME + " = ?", new String[]{String.valueOf(entry.getId())});
+        Log.d(LOGTAG, "Updating db with values " + values.toString());
+        return db.update(TABLE_ENTRY, values, KEY_ID + " = ?", new String[]{String.valueOf(entry.getId())});
     }
 
     public void deleteCategory(String name)

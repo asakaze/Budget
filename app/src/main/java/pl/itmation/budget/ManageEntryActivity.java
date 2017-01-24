@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -50,9 +51,9 @@ public class ManageEntryActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_entry);
-        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         session = getApplicationContext().getSharedPreferences(LoginActivity.SESSION, MODE_PRIVATE);
         db = ((App) getApplication()).db;
@@ -239,14 +240,13 @@ public class ManageEntryActivity extends AppCompatActivity
         String owner = session.getString(LoginActivity.SESSION_LOGIN, "");
 
         String dateStr = inputFields.date.getText().toString();
-        Calendar date = null;
+        Calendar date = Calendar.getInstance();
         if(!validateDate(dateStr))
         {
             return null;
         }
         else
         {
-            date = Calendar.getInstance();
             try
             {
                 date.setTime(BudgetEntry.dateFormatter.parse(dateStr));
