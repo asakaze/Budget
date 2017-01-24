@@ -2,9 +2,10 @@ package pl.itmation.budget;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,9 +19,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -58,7 +56,39 @@ public class MainActivity extends AppCompatActivity
         db = ((App) getApplication()).db;
         entries = db.getAllEntries();
         Collections.sort(entries);
+        setupListView();
+    }
 
+    private void setupListView()
+    {
+        setupAdapter();
+        ListView list = (ListView) findViewById(R.id.budget_list);
+        list.setAdapter(entryAdapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowId)
+            {
+                BudgetEntry currentEntry = entries.get(position);
+                if(currentUser.equals(currentEntry.getOwner()))
+                {
+                    currentPosition = position;
+                    Intent intent = new Intent(MainActivity.this, ManageEntryActivity.class);
+                    intent.putExtra("request_code", App.MODIFY_ITEM_REQ);
+                    intent.putExtra("editable_item", currentEntry);
+                    Log.d(LOGTAG, "Sending intent to modify item on postition " + String.valueOf(position));
+                    startActivityForResult(intent, App.MODIFY_ITEM_REQ);
+                }
+                else
+                {
+                    Toast.makeText(view.getContext(), getString(R.string.not_the_owner), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void setupAdapter()
+    {
         entryAdapter = new ArrayAdapter<BudgetEntry>(this, 0, entries)
         {
             @Override
@@ -66,9 +96,15 @@ public class MainActivity extends AppCompatActivity
             {
                 BudgetEntry currentEntry = entries.get(position);
 
-                if(view == null)
+                if(view == null || view.getTag() == null)
                 {
                     view = initializeView();
+                }
+
+                if(!isVisible(currentEntry, view))
+                {
+                    view = getLayoutInflater().inflate(R.layout.entry_item_null, null);
+                    return view;
                 }
 
                 EntryViewHolder viewHolder = recreateViewHolder(view);
@@ -89,6 +125,34 @@ public class MainActivity extends AppCompatActivity
                 viewHolder.date = (TextView) view.findViewById(R.id.entry_item_date);
                 view.setTag(viewHolder);
                 return view;
+            }
+
+            private boolean isVisible(BudgetEntry entry, View view)
+            {
+                if(entry.getType() == BudgetCategory.Type.EXPENSE && !App.showExpensesSelected)
+                {
+                    view.setVisibility(View.GONE);
+                    return false;
+                }
+                else if(entry.getType() == BudgetCategory.Type.EXPENSE && App.showExpensesSelected)
+                {
+                    view.setVisibility(View.VISIBLE);
+                    return true;
+                }
+                else if(entry.getType() == BudgetCategory.Type.INCOME && !App.showIncomeSelected)
+                {
+                    view.setVisibility(View.GONE);
+                    return false;
+                }
+                else if(entry.getType() == BudgetCategory.Type.INCOME && App.showIncomeSelected)
+                {
+                    view.setVisibility(View.VISIBLE);
+                    return true;
+                }
+                else
+                {
+                    return true;
+                }
             }
 
             private EntryViewHolder recreateViewHolder(View view)
@@ -134,29 +198,6 @@ public class MainActivity extends AppCompatActivity
                                         BudgetEntry.dateFormatter.format(currentEntry.getDate().getTime()));
             }
         };
-        ListView list = (ListView) findViewById(R.id.budget_list);
-        list.setAdapter(entryAdapter);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowId)
-            {
-                BudgetEntry currentEntry = entries.get(position);
-                if(currentUser.equals(currentEntry.getOwner()))
-                {
-                    currentPosition = position;
-                    Intent intent = new Intent(MainActivity.this, ManageEntryActivity.class);
-                    intent.putExtra("request_code", App.MODIFY_ITEM_REQ);
-                    intent.putExtra("editable_item", currentEntry);
-                    Log.d(LOGTAG, "Sending intent to modify item on postition " + String.valueOf(position));
-                    startActivityForResult(intent, App.MODIFY_ITEM_REQ);
-                }
-                else
-                {
-                    Toast.makeText(view.getContext(), getString(R.string.not_the_owner), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
     }
 
     @Override
@@ -164,6 +205,22 @@ public class MainActivity extends AppCompatActivity
     {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
+        if(!App.showIncomeSelected)
+        {
+            MenuItem item = menu.findItem(R.id.show_income);
+            item.setChecked(false);
+        }
+        if(!App.showExpensesSelected)
+        {
+            MenuItem item = menu.findItem(R.id.show_expenses);
+            item.setChecked(false);
+        }
         return true;
     }
 
@@ -226,10 +283,16 @@ public class MainActivity extends AppCompatActivity
         if(item.isChecked())
         {
             item.setChecked(false);
+            App.showIncomeSelected = false;
+            Log.d(LOGTAG, "Hiding income");
+            entryAdapter.notifyDataSetChanged();
         }
         else
         {
             item.setChecked(true);
+            App.showIncomeSelected = true;
+            Log.d(LOGTAG, "Showing income");
+            entryAdapter.notifyDataSetChanged();
         }
     }
 
@@ -238,10 +301,16 @@ public class MainActivity extends AppCompatActivity
         if(item.isChecked())
         {
             item.setChecked(false);
+            App.showExpensesSelected = false;
+            Log.d(LOGTAG, "Hiding expenses");
+            entryAdapter.notifyDataSetChanged();
         }
         else
         {
             item.setChecked(true);
+            App.showExpensesSelected = true;
+            Log.d(LOGTAG, "Showing expenses");
+            entryAdapter.notifyDataSetChanged();
         }
     }
 

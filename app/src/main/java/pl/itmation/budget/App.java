@@ -14,6 +14,8 @@ public class App extends Application
     public static final int MODIFY_ITEM_REQ = 20;
     public static final int MODIFY_ITEM_RESP = 21;
     public static final int DELETE_ITEM_RESP = 22;
+    public static boolean showExpensesSelected = true;
+    public static boolean showIncomeSelected = true;
 
     private static final String LOGTAG = App.class.getSimpleName();
     @Override
