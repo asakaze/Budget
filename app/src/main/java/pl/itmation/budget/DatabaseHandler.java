@@ -176,6 +176,34 @@ public class DatabaseHandler extends SQLiteOpenHelper
         }
     }
 
+    public BudgetCategory getCategory(String name)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = null;
+        try
+        {
+            cur = db.rawQuery("SELECT * FROM " + TABLE_CATEGORY + " WHERE " + KEY_NAME + " = ? ", new String[]{name});
+        }
+        catch(Exception e)
+        {
+            Log.d(LOGTAG, "DB error: " + e.toString());
+            return null;
+        }
+
+        if(cur != null && cur.moveToFirst())
+        {
+            BudgetCategory category = fillCategoryFromDB(cur);
+            Log.d(LOGTAG, "Found category: " + category.getName());
+            cur.close();
+            return category;
+        }
+        else
+        {
+            cur.close();
+            return null;
+        }
+    }
+
     public ArrayList<BudgetEntry> getAllEntries()
     {
         ArrayList<BudgetEntry> entries = new ArrayList<BudgetEntry>();
@@ -239,21 +267,26 @@ public class DatabaseHandler extends SQLiteOpenHelper
         {
             do
             {
-                String name = cur.getString(cur.getColumnIndex(KEY_NAME));
-                String type = cur.getString(cur.getColumnIndex(KEY_TYPE));
-                int value = cur.getInt(cur.getColumnIndex(KEY_VALUE));
-                String comment = cur.getString(cur.getColumnIndex(KEY_COMMENT));
-                BudgetCategory category = new BudgetCategory.BudgetCategoryBuilder(name).defaultType(type)
-                                                                                        .defaultValue(value)
-                                                                                        .comment(comment)
-                                                                                        .build();
-                categories.add(category);
+                categories.add(fillCategoryFromDB(cur));
             }
             while(cur.moveToNext());
         }
 
         cur.close();
         return categories;
+    }
+
+    private BudgetCategory fillCategoryFromDB(Cursor cur)
+    {
+        String name = cur.getString(cur.getColumnIndex(KEY_NAME));
+        String type = cur.getString(cur.getColumnIndex(KEY_TYPE));
+        int value = cur.getInt(cur.getColumnIndex(KEY_VALUE));
+        String comment = cur.getString(cur.getColumnIndex(KEY_COMMENT));
+        BudgetCategory category = new BudgetCategory.BudgetCategoryBuilder(name).defaultType(type)
+                                                                                .defaultValue(value)
+                                                                                .comment(comment)
+                                                                                .build();
+        return category;
     }
 
     public int updateCategory(BudgetCategory category)

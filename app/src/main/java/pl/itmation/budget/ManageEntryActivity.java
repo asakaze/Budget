@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -44,7 +45,9 @@ public class ManageEntryActivity extends AppCompatActivity
     private ArrayAdapter<String> categorySpinnerAdapter = null;
     private ArrayAdapter<CharSequence> typeSpinnerAdapter = null;
     private InputFields inputFields = null;
-    SharedPreferences session = null;
+    private SharedPreferences session = null;
+    private boolean valueProvidedByUser = false;
+    private boolean typeProvidedByUser = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,6 +64,8 @@ public class ManageEntryActivity extends AppCompatActivity
         setMode(data);
         loadFieldsFromResources();
         populateSpinners();
+        setListeners();
+
         if(mode == Mode.MODIFY)
         {
             loadedItem = data.getExtras().getParcelable("editable_item");
@@ -100,6 +105,83 @@ public class ManageEntryActivity extends AppCompatActivity
         inputFields.date = (EditText) findViewById(R.id.content_manage_entry_date_input);
     }
 
+    private void setListeners()
+    {
+        setListenerOnType();
+        setListenerOnValue();
+        setListenerOnCategory();
+    }
+
+    private void setListenerOnType()
+    {
+        inputFields.type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+            {
+                String name = inputFields.category.getSelectedItem().toString();
+                if(!TextUtils.isEmpty(name))
+                {
+                    typeProvidedByUser = true;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView)
+            {
+                return;
+            }
+        });
+    }
+
+    private void setListenerOnValue()
+    {
+        inputFields.value.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                valueProvidedByUser = true;
+            }
+        });
+    }
+
+    private void setListenerOnCategory()
+    {
+        inputFields.category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+            {
+                String name = inputFields.category.getSelectedItem().toString();
+                if(!TextUtils.isEmpty(name))
+                {
+                    fillDefaultValues(name);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView)
+            {
+                return;
+            }
+
+            private void fillDefaultValues(String name)
+            {
+                BudgetCategory category = db.getCategory(name);
+                if((category.getDefaultType() != null) && !typeProvidedByUser)
+                {
+                    int position = category.getDefaultType().ordinal() + 1;
+                    inputFields.type.setSelection(position);
+                }
+                if((category.getDefaultValue() > 0) && !valueProvidedByUser)
+                {
+                    inputFields.value.setText(String.valueOf(category.getDefaultValue()));
+                }
+            }
+        });
+    }
+
     private void populateSpinners()
     {
         populateTypeSpinner();
@@ -118,6 +200,7 @@ public class ManageEntryActivity extends AppCompatActivity
     {
         ArrayList<String> category_names = new ArrayList<>();
         ArrayList<BudgetCategory> categories = db.getAllCategories();
+        category_names.add("");
 
         for(BudgetCategory cat : categories)
         {
@@ -256,7 +339,11 @@ public class ManageEntryActivity extends AppCompatActivity
                 return null;
             }
         }
-        String category = extractCategory();
+        String category = inputFields.category.getSelectedItem().toString();
+        if(!validateCategory(category))
+        {
+            return null;
+        }
         String comment = inputFields.comment.getText().toString();
 
         BudgetEntry entry = new BudgetEntry(name, category, type, value, date, owner, comment);
@@ -342,10 +429,18 @@ public class ManageEntryActivity extends AppCompatActivity
         }
     }
 
-    private String extractCategory()
+    private boolean validateCategory(String category)
     {
-        Spinner categoryInput = (Spinner) findViewById(R.id.content_manage_entry_spinner_category);
-        return categoryInput.getSelectedItem().toString();
+        if(TextUtils.isEmpty(category))
+        {
+            Toast.makeText(this, getString(R.string.category_required), Toast.LENGTH_LONG).show();
+            inputFields.category.requestFocus();
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     private boolean validateDate(String dateStr)
